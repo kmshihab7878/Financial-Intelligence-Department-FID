@@ -1,0 +1,134 @@
+{
+  "uid": "ais-overview",
+  "title": "AIS Trading System",
+  "tags": ["ais", "trading"],
+  "timezone": "utc",
+  "refresh": "10s",
+  "time": { "from": "now-3h", "to": "now" },
+  "panels": [
+    {
+      "title": "NAV",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 5, "x": 0, "y": 0 },
+      "targets": [{ "expr": "ais_nav", "legendFormat": "NAV" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "P&L (fraction)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 5, "x": 5, "y": 0 },
+      "targets": [{ "expr": "ais_pnl", "legendFormat": "P&L" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "thresholds": { "steps": [{"color":"red","value":null},{"color":"green","value":0}] } } }
+    },
+    {
+      "title": "Exposure",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 5, "x": 10, "y": 0 },
+      "targets": [{ "expr": "ais_exposure", "legendFormat": "Gross" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "max": 2 } }
+    },
+    {
+      "title": "Drawdown",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 5, "x": 15, "y": 0 },
+      "targets": [{ "expr": "ais_drawdown", "legendFormat": "DD" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "thresholds": { "steps": [{"color":"green","value":null},{"color":"orange","value":0.03},{"color":"red","value":0.05}] } } }
+    },
+    {
+      "title": "Leverage",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "targets": [{ "expr": "ais_leverage", "legendFormat": "Lev" }],
+      "fieldConfig": { "defaults": { "unit": "none", "thresholds": { "steps": [{"color":"green","value":null},{"color":"red","value":1}] } } }
+    },
+    {
+      "title": "Loop Cycle Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 4 },
+      "targets": [{ "expr": "rate(ais_loop_cycles_total[5m])*60", "legendFormat": "cycles/min" }]
+    },
+    {
+      "title": "Cycle Duration p95",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 4 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(ais_loop_cycle_seconds_bucket[5m]))", "legendFormat": "p95" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Loop Errors",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 4 },
+      "targets": [{ "expr": "rate(ais_loop_errors_total[5m])*60", "legendFormat": "{{component}}" }]
+    },
+    {
+      "title": "Heartbeat Age",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 4 },
+      "targets": [{ "expr": "time() - ais_loop_heartbeat_epoch", "legendFormat": "age" }],
+      "fieldConfig": { "defaults": { "unit": "s", "thresholds": { "steps": [{"color":"green","value":null},{"color":"orange","value":30},{"color":"red","value":120}] } } }
+    },
+    {
+      "title": "Orders Submitted",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 10 },
+      "targets": [{ "expr": "rate(ais_orders_submitted_total[5m])*60", "legendFormat": "{{symbol}} {{side}}" }]
+    },
+    {
+      "title": "Orders Filled",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 10 },
+      "targets": [{ "expr": "rate(ais_orders_filled_total[5m])*60", "legendFormat": "{{symbol}}" }]
+    },
+    {
+      "title": "Signal Approval",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 10 },
+      "targets": [
+        { "expr": "ais_signals_approved_total", "legendFormat": "approved" },
+        { "expr": "sum(ais_signals_rejected_total)", "legendFormat": "rejected" }
+      ]
+    },
+    {
+      "title": "Aster MCP Latency p95",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(ais_aster_latency_seconds_bucket[5m]))", "legendFormat": "{{tool}}" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "title": "Aster MCP Errors",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 },
+      "targets": [{ "expr": "rate(ais_aster_errors_total[5m])*60", "legendFormat": "{{tool}}" }]
+    },
+    {
+      "title": "Risk Rejections",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 22 },
+      "targets": [{ "expr": "rate(ais_risk_rejections_total[5m])*60", "legendFormat": "{{guard}}" }]
+    },
+    {
+      "title": "Kill Switch Triggers",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 22 },
+      "targets": [{ "expr": "ais_kill_switch_triggers_total", "legendFormat": "triggers" }],
+      "fieldConfig": { "defaults": { "thresholds": { "steps": [{"color":"green","value":null},{"color":"red","value":1}] } } }
+    },
+    {
+      "title": "Mandate P&L",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 22 },
+      "targets": [{ "expr": "ais_mandate_pnl", "legendFormat": "{{mandate_id}}" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Mandate Drawdown",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 22 },
+      "targets": [{ "expr": "ais_mandate_drawdown", "legendFormat": "{{mandate_id}}" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit" } }
+    }
+  ],
+  "schemaVersion": 39,
+  "version": 1
+}

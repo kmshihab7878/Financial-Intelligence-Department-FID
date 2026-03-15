@@ -1,0 +1,114 @@
+version: "3.9"
+
+services:
+  ais-api:
+    build: .
+    env_file:
+      - .env
+    environment:
+      APP_TARGET: ais
+    ports:
+      - "8000:8000"
+      - "9001:9001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    volumes:
+      - ais-logs:/app/logs
+      - ais-data:/app/data
+
+  ais-loop:
+    build: .
+    env_file:
+      - .env
+    environment:
+      APP_TARGET: ais-loop
+      AIS_EXECUTION_MODE: ${AIS_EXECUTION_MODE:-paper}
+    depends_on:
+      ais-api:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import time; t=float(open('/tmp/ais_loop_heartbeat').read()); assert time.time()-t<120\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    volumes:
+      - ais-logs:/app/logs
+      - ais-data:/app/data
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ais
+      POSTGRES_USER: ais
+      POSTGRES_PASSWORD: ${AIS_DB_PASSWORD:?Set AIS_DB_PASSWORD in .env}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ais"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - promdata:/prometheus
+    depends_on:
+      - ais-api
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:?Set GF_ADMIN_PASSWORD in .env}
+      GF_INSTALL_PLUGINS: ""
+    volumes:
+      - ./dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+  promdata:
+  grafanadata:
+  ais-logs:
+  ais-data:
