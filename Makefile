@@ -51,7 +51,7 @@ test:
 
 test-cov:
 	@echo "Running AIS tests with coverage..."
-	pytest tests/unit/ --cov=src/aiswarm --cov-report=term-missing --cov-fail-under=60
+	pytest tests/unit/ --cov=src/aiswarm --cov-report=term-missing --cov-fail-under=83
 
 lint:
 	@echo "Linting AIS..."

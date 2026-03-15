@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/blob/main/SECURITY.md
+    about: Report security vulnerabilities via the process described in SECURITY.md

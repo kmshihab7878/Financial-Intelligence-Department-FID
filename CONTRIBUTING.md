@@ -28,7 +28,7 @@ pre-commit install
 
 Before submitting a PR:
 
-1. **Tests pass**: `pytest tests/unit/ -v --cov=src/aiswarm --cov-fail-under=60`
+1. **Tests pass**: `pytest tests/unit/ -v --cov=src/aiswarm --cov-fail-under=83`
 2. **Lint clean**: `ruff check src/ tests/unit/`
 3. **Format clean**: `ruff format --check src/ tests/unit/`
 4. **Type check passes**: `mypy src/aiswarm/ --ignore-missing-imports`
@@ -37,7 +37,7 @@ Before submitting a PR:
 
 - Tests live in `tests/unit/`
 - Use pytest with the AAA pattern (Arrange, Act, Assert)
-- Minimum 60% code coverage
+- Minimum 83% code coverage
 - New features require corresponding tests
 
 ## Project Structure

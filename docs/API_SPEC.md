@@ -2,7 +2,7 @@
 
 ## Overview
 
-AIS exposes a FastAPI application (`aiswarm.api.app`) at version 2.0.0.
+AIS exposes a FastAPI application (`aiswarm.api.app`) at version 1.1.0.
 
 **Authentication**: All control and report endpoints require Bearer token authentication via the `AIS_API_KEY` environment variable. Health and metrics endpoints are public.
 
@@ -81,3 +81,21 @@ All errors follow the FastAPI default format:
 ```
 
 Standard HTTP status codes: 401 (unauthorized), 422 (validation error), 500 (internal error).
+
+## Quick Examples
+
+```bash
+# Health check (no auth required)
+curl -s http://localhost:8000/health | python -m json.tool
+
+# System status (authenticated)
+curl -s -H "Authorization: Bearer $AIS_API_KEY" \
+  http://localhost:8000/control/status
+
+# Emergency kill switch (authenticated)
+curl -s -X POST \
+  -H "Authorization: Bearer $AIS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "manual intervention"}' \
+  http://localhost:8000/control/kill-switch
+```

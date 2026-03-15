@@ -40,7 +40,7 @@ src/aiswarm/
 
 ```bash
 # Tests
-pytest tests/unit/ --cov=src/aiswarm --cov-fail-under=60
+pytest tests/unit/ --cov=src/aiswarm --cov-fail-under=83
 
 # Lint
 ruff check src/ tests/unit/
@@ -79,4 +79,4 @@ docker compose up --build
 - structlog for structured logging
 - SQLite EventStore for append-only audit trail
 - YAML config in `config/` (base, risk, execution, mandates, portfolio, monitoring)
-- Tests in `tests/unit/` using pytest, 60% coverage minimum
+- Tests in `tests/unit/` using pytest, 83% coverage minimum

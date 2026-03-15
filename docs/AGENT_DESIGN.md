@@ -23,11 +23,6 @@ Agents are organized into functional clusters:
 |---------|-----------|---------|
 | `market_intelligence` | `agents/market_intelligence/` | Real-time market structure analysis |
 | `strategy` | `agents/strategy/` | Signal generation from market data |
-| `forecasting` | `agents/forecasting/` | Probabilistic price/regime forecasting |
-| `portfolio` | `agents/portfolio/` | Portfolio-level optimization signals |
-| `risk` | `agents/risk/` | Risk-specific monitoring agents |
-| `execution` | `agents/execution/` | Execution quality and timing agents |
-| `evolution` | `agents/evolution/` | Self-improvement and strategy mutation |
 
 ### Implemented Agents
 

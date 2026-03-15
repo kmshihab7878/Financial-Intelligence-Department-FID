@@ -46,7 +46,7 @@ jobs:
           cache: pip
       - run: pip install -e ".[dev]"
       - name: Run tests
-        run: pytest tests/unit/ --cov=src/aiswarm --cov-report=term-missing --cov-fail-under=60
+        run: pytest tests/unit/ --cov=src/aiswarm --cov-report=term-missing --cov-fail-under=83
         env:
           AIS_RISK_HMAC_SECRET: test-secret-for-ci
           AIS_API_KEY: test-api-key-for-ci

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from aiswarm import __version__
 from aiswarm.api.routes_control import router as control_router
 from aiswarm.api.routes_health import router as health_router
 from aiswarm.api.routes_mandates import router as mandates_router
@@ -11,7 +12,7 @@ from aiswarm.api.routes_metrics import router as metrics_router
 from aiswarm.api.routes_reports import router as reports_router
 from aiswarm.api.routes_session import router as session_router
 
-app = FastAPI(title="Autonomous Investment Swarm", version="7.0.0")
+app = FastAPI(title="Autonomous Investment Swarm", version=__version__)
 
 # Static files (dashboard)
 _static_dir = Path(__file__).parent / "static"

@@ -1,2 +1,0 @@
-class Challenger:
-    pass

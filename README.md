@@ -1,5 +1,10 @@
 # Autonomous Investment Swarm (AIS)
 
+[![CI](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/actions/workflows/ci.yml/badge.svg)](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/actions)
+[![Coverage: 86%](https://img.shields.io/badge/coverage-86%25-brightgreen)]()
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000)](https://docs.astral.sh/ruff/)
+[![Typed: mypy](https://img.shields.io/badge/typing-mypy-blue)](http://mypy-lang.org/)
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-orange)]()
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
@@ -7,13 +12,50 @@ An experimental autonomous trading system built around risk-gated multi-agent or
 
 > **WARNING**: This software is experimental and intended for research and educational purposes. Trading cryptocurrencies involves substantial risk of loss. Never deploy with funds you cannot afford to lose. The authors accept no liability for financial losses incurred through use of this software.
 
+---
+
+## Table of Contents
+
+- [Why AIS?](#why-ais)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Running Tests](#running-tests)
+- [Example Output](#example-output)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+
+## Why AIS?
+
+Most trading bots execute a single strategy with basic stop-losses. AIS takes a different approach:
+
+- **Risk-gated execution** — Every order requires an HMAC-signed approval token from the risk engine. No token, no trade. The system fails closed, not open.
+- **Mandate governance** — Strategies operate within explicit mandates that cap allocation, restrict instruments, and enforce position limits. Mandates are validated before every trading cycle.
+- **Multi-agent arbitration** — Multiple strategy agents compete to generate signals. A weighted arbitration layer selects the best signal based on confidence, expected return, and liquidity — preventing conflicting positions.
+- **Three execution modes** — Paper trading (simulated fills), shadow mode (read-only exchange connection), and live mode (gated behind explicit opt-in). Each mode shares the same pipeline, so what you test is what you deploy.
+
 ## Architecture
 
+```mermaid
+graph TD
+    D[Data Providers] --> MI[Market Intelligence]
+    D --> ST[Strategy Agents]
+    MI --> O[Orchestration Layer]
+    ST --> O
+    O --> PF[Portfolio Allocator]
+    PF --> RK[Risk Engine]
+    RK -->|approve / veto| O
+    O --> EX[Execution]
+    EX --> BR[Aster DEX / Simulator]
+    BR --> MON[Monitoring]
+    O <--> MEM[Shared Memory]
+    RK <--> MEM
+    PF <--> MEM
+    EX <--> MEM
 ```
-Signal Generation -> Coordinator -> Portfolio Allocator -> Risk Engine -> Order Management
-```
-
-AIS enforces a strict control path: every order must pass through `RiskEngine.validate()`, which issues an HMAC-signed approval token. The token is verified again before submission. Orders without valid tokens are rejected.
 
 ```
 src/aiswarm/
@@ -27,7 +69,7 @@ src/aiswarm/
 ├── monitoring/     # Prometheus metrics, alerts, reconciliation
 ├── orchestration/  # Coordinator, arbitration, shared memory
 ├── portfolio/      # Allocator, exposure manager
-├── quant/          # Kelly criterion, risk metrics
+├── quant/          # Kelly criterion, risk metrics, drift detection
 ├── resilience/     # Circuit breaker, rate limiter, graceful shutdown
 ├── risk/           # Risk engine, kill switch, drawdown, leverage checks
 ├── session/        # Session lifecycle management
@@ -104,7 +146,7 @@ See `.env.example` for the full list.
 
 ```bash
 # Unit tests with coverage
-pytest tests/unit/ -v --cov=src/aiswarm --cov-fail-under=60
+pytest tests/unit/ -v --cov=src/aiswarm --cov-fail-under=83
 
 # Lint
 ruff check src/ tests/unit/
@@ -113,6 +155,29 @@ ruff format --check src/ tests/unit/
 # Type check
 mypy src/aiswarm/ --ignore-missing-imports
 ```
+
+## Example Output
+
+Paper trading loop output (structlog JSON):
+
+```
+{"event": "session_started", "mode": "paper", "strategies": ["momentum_ma_crossover", "funding_rate_contrarian"]}
+{"event": "cycle_start", "cycle": 1, "timestamp": "2025-01-15T10:00:00Z"}
+{"event": "signal_generated", "agent": "momentum", "symbol": "BTCUSDT", "direction": 1, "confidence": 0.72}
+{"event": "risk_approved", "symbol": "BTCUSDT", "size": 0.001, "token": "hmac:a3f2..."}
+{"event": "order_submitted", "symbol": "BTCUSDT", "side": "BUY", "qty": 0.001, "mode": "paper"}
+{"event": "cycle_end", "cycle": 1, "duration_ms": 245}
+```
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `AIS_RISK_HMAC_SECRET not set` | Set the environment variable: `export AIS_RISK_HMAC_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")` |
+| `ConnectionError: Redis` | Start Redis: `redis-server` or `docker run -d -p 6379:6379 redis:7-alpine` |
+| `ModuleNotFoundError: aiswarm` | Install in editable mode: `pip install -e .` from the repo root |
+| Kill switch won't reset | Kill switch requires manual restart of the trading loop process |
+| `401 Unauthorized` on API | Set `AIS_API_KEY` and pass as Bearer token: `curl -H "Authorization: Bearer $AIS_API_KEY"` |
 
 ## Contributing
 

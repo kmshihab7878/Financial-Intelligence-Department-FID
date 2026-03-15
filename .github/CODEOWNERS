@@ -1,0 +1,7 @@
+# Default owner for everything
+* @kmshihab7878
+
+# Critical paths — require explicit review
+/src/aiswarm/risk/ @kmshihab7878
+/src/aiswarm/execution/ @kmshihab7878
+/src/aiswarm/api/auth.py @kmshihab7878
