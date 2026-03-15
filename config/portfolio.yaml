@@ -1,0 +1,4 @@
+portfolio:
+  target_gross_exposure: 0.75
+  max_single_position_weight: 0.05
+  rebalance_interval_minutes: 60

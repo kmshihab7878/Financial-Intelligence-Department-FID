@@ -1,0 +1,2 @@
+class Drift:
+    pass

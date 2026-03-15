@@ -1,0 +1,4 @@
+mode: paper
+execution:
+  endpoint: http://paper-broker:9000
+  allow_live: false

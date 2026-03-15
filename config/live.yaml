@@ -1,0 +1,9 @@
+# Live mode configuration
+# Requires: AIS_MCP_SERVER_URL, AIS_ENABLE_LIVE_TRADING=true,
+# ASTER_ACCOUNT_ID, AIS_API_KEY, AIS_RISK_HMAC_SECRET
+
+mode: live
+
+execution:
+  allow_live: true
+  require_explicit_flag: true

@@ -1,0 +1,48 @@
+mandates:
+  - mandate_id: "mandate_btc_momentum"
+    strategy: "momentum_ma_crossover"
+    symbols:
+      - "BTCUSDT"
+      - "BTCUSDC"
+    risk_budget:
+      max_capital: 10000.0
+      max_daily_loss: 0.02
+      max_drawdown: 0.05
+      max_open_orders: 3
+      max_position_notional: 5000.0
+    notes: "BTC momentum — conservative sizing"
+
+  - mandate_id: "mandate_eth_momentum"
+    strategy: "momentum_ma_crossover"
+    symbols:
+      - "ETHUSDT"
+      - "ETHUSDC"
+    risk_budget:
+      max_capital: 5000.0
+      max_daily_loss: 0.03
+      max_drawdown: 0.08
+      max_open_orders: 2
+      max_position_notional: 2500.0
+    notes: "ETH momentum — smaller allocation"
+
+  - mandate_id: "mandate_funding_rate"
+    strategy: "funding_rate_contrarian"
+    symbols:
+      - "BTCUSDT"
+      - "ETHUSDT"
+    risk_budget:
+      max_capital: 8000.0
+      max_daily_loss: 0.01
+      max_drawdown: 0.03
+      max_open_orders: 4
+      max_position_notional: 4000.0
+    notes: "Funding rate arb — tight loss limits"
+
+session:
+  default_duration_hours: 8
+  auto_end_on_schedule: true
+  require_approval: true
+
+staging:
+  enabled: true
+  auto_expire_seconds: 300

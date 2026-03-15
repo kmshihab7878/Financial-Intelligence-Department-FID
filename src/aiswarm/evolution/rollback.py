@@ -1,0 +1,2 @@
+class Rollback:
+    pass

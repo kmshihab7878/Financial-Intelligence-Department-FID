@@ -1,0 +1,9 @@
+monitoring:
+  prometheus_port: 9001
+  health_interval_seconds: 30
+  decision_log_json: true
+
+alerting:
+  enabled: false
+  webhook_url: ""
+  severity_filter: "warning"

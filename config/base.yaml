@@ -1,0 +1,7 @@
+environment: paper
+default_currency: USD
+audit:
+  decision_log_path: logs/decision_log.jsonl
+orchestration:
+  arbitration_mode: weighted_voting
+  required_risk_approval: true
