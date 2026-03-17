@@ -33,6 +33,8 @@ services:
     environment:
       APP_TARGET: ais-loop
       AIS_EXECUTION_MODE: ${AIS_EXECUTION_MODE:-paper}
+    ports:
+      - "9002:9002"
     depends_on:
       ais-api:
         condition: service_healthy
@@ -88,6 +90,7 @@ services:
       - promdata:/prometheus
     depends_on:
       - ais-api
+      - ais-loop
     restart: unless-stopped
 
   grafana:

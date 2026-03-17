@@ -362,10 +362,46 @@
       "id": 202
     },
     {
+      "id": 38,
+      "title": "Loop Cycles (rate)",
+      "description": "Rate of completed trading loop cycles per minute.",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 23 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "expr": "rate(ais_loop_cycles_total[5m]) * 60",
+          "legendFormat": "cycles/min",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 15,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "axisLabel": "cycles/min"
+          },
+          "color": { "fixedColor": "blue", "mode": "fixed" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single", "sort": "none" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      }
+    },
+    {
       "id": 29,
       "title": "Loop Cycle Duration (p50 / p95 / p99)",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 23 },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 23 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
         {
@@ -410,7 +446,7 @@
       "id": 30,
       "title": "Loop Errors",
       "type": "timeseries",
-      "gridPos": { "h": 8, "w": 6, "x": 8, "y": 23 },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 23 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
         {
@@ -445,7 +481,7 @@
       "title": "Heartbeat Age",
       "description": "Seconds since the last loop heartbeat. Values above 120s indicate the loop may be stalled.",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 5, "x": 14, "y": 23 },
+      "gridPos": { "h": 8, "w": 3, "x": 18, "y": 23 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
         {
@@ -485,7 +521,7 @@
       "title": "Loop Halted",
       "description": "1 = loop is halted, 0 = loop is running normally",
       "type": "stat",
-      "gridPos": { "h": 8, "w": 5, "x": 19, "y": 23 },
+      "gridPos": { "h": 8, "w": 3, "x": 21, "y": 23 },
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "targets": [
         {

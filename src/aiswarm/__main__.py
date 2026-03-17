@@ -103,7 +103,18 @@ def _run_api(args: argparse.Namespace) -> int:
 def _run_loop(args: argparse.Namespace) -> int:
     """Bootstrap and run the trading loop."""
     try:
+        from prometheus_client import start_http_server
+
         from aiswarm.bootstrap import bootstrap_from_config
+
+        # Start Prometheus metrics server so the loop's in-process metrics
+        # (LOOP_CYCLES, LOOP_CYCLE_DURATION, etc.) are scrapable.
+        metrics_port = int(os.environ.get("AIS_LOOP_METRICS_PORT", "9002"))
+        start_http_server(metrics_port)
+        logger.info(
+            "Loop metrics server started",
+            extra={"extra_json": {"port": metrics_port}},
+        )
 
         logger.info(
             "Bootstrapping trading loop",

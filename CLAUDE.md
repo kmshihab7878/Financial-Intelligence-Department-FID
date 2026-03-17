@@ -71,6 +71,7 @@ docker compose up --build
 | `AIS_SECRETS_FILE` | File-based secrets path (JSON) | Optional (alt secrets backend) |
 | `AIS_SECRETS_DIR` | Directory-based secrets path | Optional (alt secrets backend) |
 | `AIS_DB_PATH` | EventStore database path | Optional (default: data/ais_events.db) |
+| `AIS_LOOP_METRICS_PORT` | Loop Prometheus metrics port | Optional (default: 9002) |
 | `AIS_SLACK_WEBHOOK_URL` | Slack alert webhook | Optional (alert dispatch) |
 | `AIS_ALERT_WEBHOOK_URL` | Generic alert webhook | Optional (alert dispatch) |
 
