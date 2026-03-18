@@ -7,6 +7,7 @@ complete order flow without connecting to a real exchange.
 
 from __future__ import annotations
 
+import dataclasses
 import os
 import tempfile
 
@@ -263,6 +264,9 @@ class TestE2ETradingCycle:
                 db_path=tempfile.mktemp(suffix=".db"),
             )
 
+            # Force reconciliation to run on first cycle regardless of monotonic clock
+            loop.config = dataclasses.replace(loop.config, reconciliation_interval=0)
+
             loop.session_manager.start_session()
             loop.session_manager.approve_session("e2e-test")
             loop.session_manager.activate_session()
@@ -270,6 +274,7 @@ class TestE2ETradingCycle:
             result = loop._run_cycle()
 
             # Reconciliation should pass (no positions, no mismatches)
+            assert result.errors == (), f"Unexpected errors: {result.errors}"
             assert result.reconciliation_passed is True
 
         finally:
