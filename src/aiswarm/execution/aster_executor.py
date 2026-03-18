@@ -25,6 +25,18 @@ from aiswarm.data.providers.aster_config import (
     Venue,
     normalize_symbol,
 )
+from aiswarm.exchange.providers.aster import (
+    _TOOL_CANCEL_ALL_ORDERS,
+    _TOOL_CANCEL_ORDER,
+    _TOOL_CANCEL_SPOT_ALL_ORDERS,
+    _TOOL_CANCEL_SPOT_ORDER,
+    _TOOL_GET_MY_TRADES,
+    _TOOL_GET_ORDER,
+    _TOOL_GET_SPOT_MY_TRADES,
+    _TOOL_GET_SPOT_ORDER,
+    _TOOL_SET_LEVERAGE,
+    _TOOL_SET_MARGIN_MODE,
+)
 from aiswarm.risk.limits import verify_risk_token
 from aiswarm.types.orders import Order, Side
 from aiswarm.utils.logging import get_logger
@@ -96,7 +108,7 @@ class AsterExecutor:
     # --- Order Preparation ---
 
     def prepare_futures_order(self, order: Order) -> dict[str, Any]:
-        """Prepare parameters for mcp__aster__create_order."""
+        """Prepare parameters for Aster futures order."""
         if not order.risk_approval_token:
             raise ValueError("Cannot submit order without risk approval token")
         if self.mode == ExecutionMode.LIVE:
@@ -117,7 +129,7 @@ class AsterExecutor:
         return params
 
     def prepare_spot_order(self, order: Order) -> dict[str, Any]:
-        """Prepare parameters for mcp__aster__create_spot_order."""
+        """Prepare parameters for Aster spot order."""
         if not order.risk_approval_token:
             raise ValueError("Cannot submit order without risk approval token")
         if self.mode == ExecutionMode.LIVE:
@@ -173,9 +185,9 @@ class AsterExecutor:
         venue: Venue = Venue.FUTURES,
     ) -> dict[str, Any]:
         """Prepare parameters for cancel order MCP call."""
-        tool = "cancel_order" if venue == Venue.FUTURES else "cancel_spot_order"
+        tool = _TOOL_CANCEL_ORDER if venue == Venue.FUTURES else _TOOL_CANCEL_SPOT_ORDER
         return {
-            "tool": f"mcp__aster__{tool}",
+            "tool": tool,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
             "order_id": order_id,
@@ -190,9 +202,9 @@ class AsterExecutor:
 
         This is the atomic emergency stop — cancels ALL open orders for a symbol.
         """
-        tool = "cancel_all_orders" if venue == Venue.FUTURES else "cancel_spot_all_orders"
+        tool = _TOOL_CANCEL_ALL_ORDERS if venue == Venue.FUTURES else _TOOL_CANCEL_SPOT_ALL_ORDERS
         return {
-            "tool": f"mcp__aster__{tool}",
+            "tool": tool,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
         }
@@ -217,9 +229,9 @@ class AsterExecutor:
         venue: Venue = Venue.FUTURES,
     ) -> dict[str, Any]:
         """Prepare parameters for order status query."""
-        tool = "get_order" if venue == Venue.FUTURES else "get_spot_order"
+        tool = _TOOL_GET_ORDER if venue == Venue.FUTURES else _TOOL_GET_SPOT_ORDER
         return {
-            "tool": f"mcp__aster__{tool}",
+            "tool": tool,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
             "order_id": order_id,
@@ -231,9 +243,9 @@ class AsterExecutor:
         venue: Venue = Venue.FUTURES,
     ) -> dict[str, Any]:
         """Prepare parameters for trade/fill history query."""
-        tool = "get_my_trades" if venue == Venue.FUTURES else "get_spot_my_trades"
+        tool = _TOOL_GET_MY_TRADES if venue == Venue.FUTURES else _TOOL_GET_SPOT_MY_TRADES
         return {
-            "tool": f"mcp__aster__{tool}",
+            "tool": tool,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
         }
@@ -243,7 +255,7 @@ class AsterExecutor:
     def prepare_set_leverage(self, symbol: str, leverage: int) -> dict[str, Any]:
         """Prepare parameters to set leverage before trading."""
         return {
-            "tool": "mcp__aster__set_leverage",
+            "tool": _TOOL_SET_LEVERAGE,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
             "leverage": leverage,
@@ -252,7 +264,7 @@ class AsterExecutor:
     def prepare_set_margin_mode(self, symbol: str, mode: str = "ISOLATED") -> dict[str, Any]:
         """Prepare parameters to set margin mode (ISOLATED recommended)."""
         return {
-            "tool": "mcp__aster__set_margin_mode",
+            "tool": _TOOL_SET_MARGIN_MODE,
             "account_id": self.config.account_id,
             "symbol": normalize_symbol(symbol),
             "margin_mode": mode,

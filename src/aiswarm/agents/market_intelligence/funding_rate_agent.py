@@ -1,6 +1,6 @@
 """Funding rate contrarian agent.
 
-Consumes funding rate data from Aster DEX (mcp__aster__get_funding_rate)
+Consumes funding rate data from exchange via ExchangeProvider
 and generates contrarian signals when funding is extreme:
   - Extreme positive funding → market is over-leveraged long → contrarian short signal
   - Extreme negative funding → market is over-leveraged short → contrarian long signal

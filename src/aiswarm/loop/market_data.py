@@ -1,4 +1,4 @@
-"""Market data service — fetches live data via MCP gateway for agent consumption."""
+"""Market data service — fetches live data via exchange provider for agent consumption."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from aiswarm.data.providers.aster import AsterDataProvider
-from aiswarm.execution.mcp_gateway import MCPGateway
+from aiswarm.exchange.provider import ExchangeProvider
 from aiswarm.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -24,18 +24,18 @@ class SymbolData:
 
 
 class MarketDataService:
-    """Fetches market data from Aster DEX via MCP gateway.
+    """Fetches market data from exchange via ExchangeProvider.
 
     Provides structured data contexts for agents to consume.
     """
 
     def __init__(
         self,
-        gateway: MCPGateway,
-        provider: AsterDataProvider | None = None,
+        provider: ExchangeProvider,
     ) -> None:
-        self.gateway = gateway
-        self.provider = provider or AsterDataProvider()
+        self.provider = provider
+        # Keep a parser for liquidity computation
+        self._data_provider = AsterDataProvider()
 
     def fetch_symbol_data(
         self,
@@ -45,24 +45,62 @@ class MarketDataService:
     ) -> SymbolData:
         """Fetch all market data for a symbol.
 
-        Calls klines, funding rate, ticker, and order book MCP tools.
+        Calls klines, funding rate, ticker, and order book via provider.
         Returns raw responses for agents to parse.
         """
-        klines_raw = self._fetch_safe(
-            "mcp__aster__get_klines",
-            {"symbol": symbol, "interval": klines_interval, "limit": klines_limit},
+        klines = self.provider.get_klines(symbol, klines_interval, klines_limit)
+        funding = self.provider.get_funding_rate(symbol)
+        ticker = self.provider.get_ticker(symbol)
+        orderbook = self.provider.get_order_book(symbol)
+
+        # Convert parsed types back to raw-like format for agent context
+        # (agents expect raw dicts in their context)
+        klines_raw = (
+            [
+                {
+                    "openTime": int(k.timestamp.timestamp() * 1000),
+                    "open": str(k.open),
+                    "high": str(k.high),
+                    "low": str(k.low),
+                    "close": str(k.close),
+                    "volume": str(k.volume),
+                }
+                for k in klines
+            ]
+            if klines
+            else None
         )
-        funding_raw = self._fetch_safe(
-            "mcp__aster__get_funding_rate",
-            {"symbol": symbol},
+
+        funding_raw = (
+            {
+                "symbol": funding.symbol,
+                "lastFundingRate": str(funding.funding_rate),
+                "markPrice": str(funding.mark_price),
+            }
+            if funding
+            else None
         )
-        ticker_raw = self._fetch_safe(
-            "mcp__aster__get_ticker",
-            {"symbol": symbol},
+
+        ticker_raw = (
+            {
+                "symbol": ticker.symbol,
+                "lastPrice": str(ticker.last_price),
+                "highPrice": str(ticker.high_24h),
+                "lowPrice": str(ticker.low_24h),
+                "volume": str(ticker.volume_24h),
+                "priceChangePercent": str(ticker.price_change_pct),
+            }
+            if ticker
+            else None
         )
-        orderbook_raw = self._fetch_safe(
-            "mcp__aster__get_order_book",
-            {"symbol": symbol},
+
+        orderbook_raw = (
+            {
+                "bids": [[str(b.price), str(b.quantity)] for b in orderbook.bids],
+                "asks": [[str(a.price), str(a.quantity)] for a in orderbook.asks],
+            }
+            if orderbook
+            else None
         )
 
         return SymbolData(
@@ -90,18 +128,7 @@ class MarketDataService:
         """Compute liquidity score from order book data."""
         if data.orderbook_raw is None:
             return 0.5  # Default moderate score
-        orderbook = self.provider.parse_orderbook_response(data.orderbook_raw, data.symbol)
+        orderbook = self._data_provider.parse_orderbook_response(data.orderbook_raw, data.symbol)
         if orderbook is None:
             return 0.5
-        return float(self.provider.compute_liquidity_score(orderbook, notional))
-
-    def _fetch_safe(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any] | None:
-        """Fetch data, returning None on error."""
-        try:
-            return self.gateway.call_tool(tool_name, params)
-        except Exception as e:
-            logger.warning(
-                "Market data fetch failed",
-                extra={"extra_json": {"tool": tool_name, "error": str(e)}},
-            )
-            return None
+        return float(self._data_provider.compute_liquidity_score(orderbook, notional))

@@ -16,6 +16,7 @@ import pytest
 from aiswarm.data.event_store import EventStore
 from aiswarm.data.providers.aster import ExchangePosition
 from aiswarm.data.providers.aster_config import AsterConfig
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.aster_executor import AsterExecutor, ExecutionMode
 from aiswarm.execution.live_executor import LiveOrderExecutor
 from aiswarm.execution.mcp_gateway import MockMCPGateway
@@ -126,9 +127,10 @@ def _make_live_executor() -> tuple[LiveOrderExecutor, OrderStore, MockMCPGateway
     config = AsterConfig(account_id="test_account")
     executor = AsterExecutor(config=config, mode=ExecutionMode.LIVE)
     gateway = MockMCPGateway()
+    provider = AsterExchangeProvider(gateway, config=config)
     event_store = _make_store()
     store = OrderStore(event_store)
-    live = LiveOrderExecutor(executor, gateway, store)
+    live = LiveOrderExecutor(executor, provider, store)
     return live, store, gateway
 
 

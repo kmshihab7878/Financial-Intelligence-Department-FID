@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.mcp_gateway import MockMCPGateway
 from aiswarm.execution.portfolio_sync import PortfolioSyncService
 from aiswarm.orchestration.memory import SharedMemory
@@ -33,8 +34,9 @@ class TestPortfolioSyncService:
             ],
         )
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        sync = PortfolioSyncService(gateway, memory)
+        sync = PortfolioSyncService(provider, memory)
         result = sync.sync_account()
 
         assert result.success
@@ -56,8 +58,9 @@ class TestPortfolioSyncService:
         )
         gateway.set_response("mcp__aster__get_positions", [])
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        sync = PortfolioSyncService(gateway, memory)
+        sync = PortfolioSyncService(provider, memory)
         result = sync.sync_account()
 
         assert result.success
@@ -68,8 +71,9 @@ class TestPortfolioSyncService:
         gateway = MockMCPGateway()
         # Don't set responses — will get defaults that may not parse
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        sync = PortfolioSyncService(gateway, memory)
+        sync = PortfolioSyncService(provider, memory)
         result = sync.sync_account()
 
         # Should handle gracefully (parse_balance_response returns None for defaults)
@@ -87,8 +91,9 @@ class TestPortfolioSyncService:
         )
         gateway.set_response("mcp__aster__get_positions", [])
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        sync = PortfolioSyncService(gateway, memory)
+        sync = PortfolioSyncService(provider, memory)
 
         # First sync sets peak
         sync.sync_account()

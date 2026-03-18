@@ -1,6 +1,6 @@
 """Portfolio sync service — syncs exchange state into SharedMemory.
 
-Pulls account balances, positions, and P&L from Aster DEX via MCP
+Pulls account balances, positions, and P&L from exchange via ExchangeProvider
 and updates the in-memory portfolio snapshot used by the risk engine.
 """
 
@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aiswarm.data.providers.aster import AsterDataProvider
-from aiswarm.execution.mcp_gateway import MCPGateway
+from aiswarm.exchange.provider import ExchangeProvider
 from aiswarm.orchestration.memory import SharedMemory
 from aiswarm.types.portfolio import PortfolioSnapshot, Position
 from aiswarm.utils.logging import get_logger
@@ -29,17 +28,15 @@ class SyncResult:
 
 
 class PortfolioSyncService:
-    """Syncs portfolio state from Aster DEX into SharedMemory."""
+    """Syncs portfolio state from exchange into SharedMemory."""
 
     def __init__(
         self,
-        gateway: MCPGateway,
+        provider: ExchangeProvider,
         memory: SharedMemory,
-        provider: AsterDataProvider | None = None,
     ) -> None:
-        self.gateway = gateway
+        self.provider = provider
         self.memory = memory
-        self.provider = provider or AsterDataProvider()
 
     def sync_account(self) -> SyncResult:
         """Pull account balance and positions from exchange, update SharedMemory.
@@ -52,11 +49,7 @@ class PortfolioSyncService:
         """
         try:
             # Get balance
-            balance_response = self.gateway.call_tool(
-                "mcp__aster__get_balance",
-                {},
-            )
-            balance = self.provider.parse_balance_response(balance_response)
+            balance = self.provider.get_balance()
             if balance is None:
                 return SyncResult(
                     success=False,
@@ -66,11 +59,7 @@ class PortfolioSyncService:
                 )
 
             # Get positions
-            positions_response = self.gateway.call_tool(
-                "mcp__aster__get_positions",
-                {},
-            )
-            exchange_positions = self.provider.parse_positions_response(positions_response)
+            exchange_positions = self.provider.get_positions()
 
             # Build positions
             internal_positions: list[Position] = []
@@ -141,11 +130,7 @@ class PortfolioSyncService:
     def sync_daily_pnl(self) -> float:
         """Compute daily P&L from exchange income records."""
         try:
-            response = self.gateway.call_tool(
-                "mcp__aster__get_income",
-                {},
-            )
-            records = self.provider.parse_income_response(response)
+            records = self.provider.get_income()
             total_pnl = sum(r.amount for r in records if r.income_type == "REALIZED_PNL")
 
             # Update SharedMemory as fraction of NAV

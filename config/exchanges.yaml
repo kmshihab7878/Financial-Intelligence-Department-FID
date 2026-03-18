@@ -1,0 +1,36 @@
+# Exchange configuration
+# Each exchange requires an MCP server to be available.
+# Only 'aster' is enabled by default.
+
+exchanges:
+  - exchange_id: aster
+    enabled: true
+    is_default: true
+    # mcp_server_url: set via AIS_MCP_SERVER_URL env var
+    rate_limit_rps: 5.0
+    timeout_seconds: 10.0
+    # account_id: set via ASTER_ACCOUNT_ID env var
+
+  # Future exchanges (disabled by default):
+  # - exchange_id: binance
+  #   enabled: false
+  #   mcp_server_url: ""  # set via AIS_BINANCE_MCP_URL
+  #   rate_limit_rps: 20.0
+  #   timeout_seconds: 10.0
+
+  # - exchange_id: coinbase
+  #   enabled: false
+  #   mcp_server_url: ""  # set via AIS_COINBASE_MCP_URL
+  #   rate_limit_rps: 10.0
+  #   timeout_seconds: 15.0
+
+  # - exchange_id: bybit
+  #   enabled: false
+  #   mcp_server_url: ""  # set via AIS_BYBIT_MCP_URL
+  #   rate_limit_rps: 10.0
+  #   timeout_seconds: 10.0
+
+  # - exchange_id: ib
+  #   enabled: false
+  #   mcp_server_url: ""  # set via AIS_IB_MCP_URL
+  #   timeout_seconds: 30.0

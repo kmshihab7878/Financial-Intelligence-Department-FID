@@ -6,6 +6,7 @@ import tempfile
 from datetime import datetime, timezone
 
 from aiswarm.data.event_store import EventStore
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.fill_tracker import FillTracker
 from aiswarm.execution.mcp_gateway import MockMCPGateway
 from aiswarm.execution.order_store import OrderStore
@@ -39,10 +40,11 @@ class TestFillTracker:
     def test_no_trades_returns_zero(self) -> None:
         gateway = MockMCPGateway()
         gateway.set_response("mcp__aster__get_my_trades", {"trades": []})
+        provider = AsterExchangeProvider(gateway)
         store = OrderStore(_make_store())
         memory = SharedMemory()
 
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         result = tracker.sync_fills("BTCUSDT")
         assert result.matched_fills == 0
         assert result.total_exchange_trades == 0
@@ -71,8 +73,9 @@ class TestFillTracker:
         store.track(order)
         store.record_submission("o1", "EX001")
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         result = tracker.sync_fills("BTCUSDT")
 
         assert result.matched_fills == 1
@@ -103,8 +106,9 @@ class TestFillTracker:
         store.track(order)
         store.record_submission("o1", "EX001")
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         tracker.sync_fills("BTCUSDT")
 
         mandate_tracker = memory.get_mandate_tracker("m1")
@@ -129,8 +133,9 @@ class TestFillTracker:
         )
 
         store = OrderStore(_make_store())
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         result = tracker.sync_fills("ETHUSDT")
 
         assert result.unmatched_fills == 1
@@ -147,15 +152,17 @@ class TestFillTracker:
         store.track(_make_order())
         store.record_submission("o1", "EX001")
 
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         status = tracker.check_order_status("o1", "BTCUSDT")
         assert status == "FILLED"
 
     def test_check_order_status_unknown(self) -> None:
         gateway = MockMCPGateway()
         store = OrderStore(_make_store())
+        provider = AsterExchangeProvider(gateway)
         memory = SharedMemory()
-        tracker = FillTracker(gateway, store, memory)
+        tracker = FillTracker(provider, store, memory)
         status = tracker.check_order_status("nonexistent", "BTCUSDT")
         assert status is None

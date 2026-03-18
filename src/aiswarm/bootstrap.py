@@ -22,6 +22,9 @@ from aiswarm.agents.market_intelligence.funding_rate_agent import FundingRateAge
 from aiswarm.agents.strategy.momentum_agent import MomentumAgent
 from aiswarm.data.event_store import EventStore
 from aiswarm.data.providers.aster_config import AsterConfig
+from aiswarm.exchange.provider import ExchangeProvider
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
+from aiswarm.exchange.registry import ExchangeRegistry
 from aiswarm.execution.account_setup import AccountSetupService
 from aiswarm.execution.aster_executor import AsterExecutor, ExecutionMode
 from aiswarm.execution.fill_tracker import FillTracker
@@ -270,10 +273,20 @@ def bootstrap_from_config(
 
     gateway = gateway or _build_gateway(mode)
 
-    # Executor stack
+    # Exchange provider (encapsulates all exchange-specific tool names)
     aster_config = (
         AsterConfig.from_env(secrets_provider=secrets) if mode == ExecutionMode.LIVE else None
     )
+    exchange_provider: ExchangeProvider = AsterExchangeProvider(
+        gateway=gateway,
+        config=aster_config,
+    )
+
+    # Exchange registry
+    exchange_registry = ExchangeRegistry(default_exchange_id="aster")
+    exchange_registry.register(exchange_provider)
+
+    # Executor stack
     executor = AsterExecutor(config=aster_config, mode=mode)
     order_store = OrderStore(event_store)
 
@@ -285,13 +298,13 @@ def bootstrap_from_config(
             extra={"extra_json": {"restored_orders": restored_count}},
         )
 
-    live_executor = LiveOrderExecutor(executor, gateway, order_store)
+    live_executor = LiveOrderExecutor(executor, exchange_provider, order_store)
 
     # Services
-    fill_tracker = FillTracker(gateway, order_store, memory)
-    portfolio_sync = PortfolioSyncService(gateway, memory)
-    account_setup = AccountSetupService(executor, gateway)
-    market_data = MarketDataService(gateway)
+    fill_tracker = FillTracker(exchange_provider, order_store, memory)
+    portfolio_sync = PortfolioSyncService(exchange_provider, memory)
+    account_setup = AccountSetupService(exchange_provider)
+    market_data = MarketDataService(exchange_provider)
 
     # Agents (built early for mandate strategy validation)
     agents = build_agents(config)
@@ -418,7 +431,7 @@ def bootstrap_from_config(
         session_manager=session_manager,
         reconciliation_loop=recon_loop,
         shutdown=shutdown,
-        gateway=gateway,
+        exchange_provider=exchange_provider,
         memory=memory,
         agents=agents,
         market_data=market_data,

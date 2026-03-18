@@ -165,25 +165,28 @@ class KillSwitch:
         self,
         account_id: str,
         symbols: list[str] | None = None,
+        exchange_id: str = "aster",
     ) -> list[dict[str, str]]:
         """Prepare MCP cancel-all-orders calls for emergency shutdown.
 
         Returns a list of MCP tool parameter dicts that the caller
         should execute to cancel all open orders.
+
+        The ``exchange_id`` parameter controls the MCP tool name prefix.
         """
         targets = symbols or WHITELISTED_SYMBOLS
         cancels: list[dict[str, str]] = []
         for symbol in targets:
             cancels.append(
                 {
-                    "tool": "mcp__aster__cancel_all_orders",
+                    "tool": f"mcp__{exchange_id}__cancel_all_orders",
                     "account_id": account_id,
                     "symbol": symbol,
                 }
             )
             cancels.append(
                 {
-                    "tool": "mcp__aster__cancel_spot_all_orders",
+                    "tool": f"mcp__{exchange_id}__cancel_spot_all_orders",
                     "account_id": account_id,
                     "symbol": symbol,
                 }

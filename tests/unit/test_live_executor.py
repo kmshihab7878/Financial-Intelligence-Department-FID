@@ -9,7 +9,8 @@ from datetime import datetime, timezone
 import pytest
 
 from aiswarm.data.event_store import EventStore
-from aiswarm.data.providers.aster_config import AsterConfig, Venue
+from aiswarm.data.providers.aster_config import AsterConfig
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.aster_executor import AsterExecutor, ExecutionMode
 from aiswarm.execution.live_executor import LiveOrderExecutor
 from aiswarm.execution.mcp_gateway import MockMCPGateway
@@ -48,9 +49,10 @@ class TestLiveOrderExecutor:
     def test_paper_mode_submit(self) -> None:
         executor = AsterExecutor(mode=ExecutionMode.PAPER)
         gateway = MockMCPGateway()
+        provider = AsterExchangeProvider(gateway)
         store = OrderStore(_make_store())
 
-        live = LiveOrderExecutor(executor, gateway, store)
+        live = LiveOrderExecutor(executor, provider, store)
         result = live.submit_order(_make_order())
 
         assert result.success
@@ -61,9 +63,10 @@ class TestLiveOrderExecutor:
     def test_paper_mode_records_fill(self) -> None:
         executor = AsterExecutor(mode=ExecutionMode.PAPER)
         gateway = MockMCPGateway()
+        provider = AsterExchangeProvider(gateway)
         store = OrderStore(_make_store())
 
-        live = LiveOrderExecutor(executor, gateway, store)
+        live = LiveOrderExecutor(executor, provider, store)
         live.submit_order(_make_order())
 
         record = store.get("o1")
@@ -77,9 +80,10 @@ class TestLiveOrderExecutor:
             config = AsterConfig(account_id="test_account")
             executor = AsterExecutor(config=config, mode=ExecutionMode.LIVE)
             gateway = MockMCPGateway()
+            provider = AsterExchangeProvider(gateway, config=config)
             store = OrderStore(_make_store())
 
-            live = LiveOrderExecutor(executor, gateway, store)
+            live = LiveOrderExecutor(executor, provider, store)
             result = live.submit_order(_make_order())
 
             assert result.success
@@ -97,9 +101,10 @@ class TestLiveOrderExecutor:
             config = AsterConfig(account_id="test_account")
             executor = AsterExecutor(config=config, mode=ExecutionMode.LIVE)
             gateway = MockMCPGateway()
+            provider = AsterExchangeProvider(gateway, config=config)
             store = OrderStore(_make_store())
 
-            live = LiveOrderExecutor(executor, gateway, store, default_venue=Venue.SPOT)
+            live = LiveOrderExecutor(executor, provider, store, default_venue="spot")
             result = live.submit_order(_make_order())
 
             assert result.success
@@ -115,9 +120,10 @@ class TestLiveOrderExecutor:
             config = AsterConfig(account_id="test_account")
             executor = AsterExecutor(config=config, mode=ExecutionMode.LIVE)
             gateway = MockMCPGateway()
+            provider = AsterExchangeProvider(gateway, config=config)
             store = OrderStore(_make_store())
 
-            live = LiveOrderExecutor(executor, gateway, store)
+            live = LiveOrderExecutor(executor, provider, store)
             live.submit_order(_make_order())
 
             result = live.cancel_order("o1")
@@ -132,9 +138,10 @@ class TestLiveOrderExecutor:
     def test_cancel_nonexistent_order(self) -> None:
         executor = AsterExecutor(mode=ExecutionMode.PAPER)
         gateway = MockMCPGateway()
+        provider = AsterExchangeProvider(gateway)
         store = OrderStore(_make_store())
 
-        live = LiveOrderExecutor(executor, gateway, store)
+        live = LiveOrderExecutor(executor, provider, store)
         result = live.cancel_order("nonexistent")
         assert not result.success
 
@@ -145,9 +152,10 @@ class TestLiveOrderExecutor:
             config = AsterConfig(account_id="test_account")
             executor = AsterExecutor(config=config, mode=ExecutionMode.LIVE)
             gateway = MockMCPGateway()
+            provider = AsterExchangeProvider(gateway, config=config)
             store = OrderStore(_make_store())
 
-            live = LiveOrderExecutor(executor, gateway, store)
+            live = LiveOrderExecutor(executor, provider, store)
             results = live.cancel_all(["BTCUSDT"])
             # 2 results: futures + spot for 1 symbol
             assert len(results) == 2
@@ -165,9 +173,10 @@ class TestLiveOrderExecutor:
             gateway = MockMCPGateway()
             # Set response with no orderId to trigger failure
             gateway.set_response("mcp__aster__create_order", {})
+            provider = AsterExchangeProvider(gateway, config=config)
             store = OrderStore(_make_store())
 
-            live = LiveOrderExecutor(executor, gateway, store)
+            live = LiveOrderExecutor(executor, provider, store)
             result = live.submit_order(_make_order())
             assert not result.success
         finally:

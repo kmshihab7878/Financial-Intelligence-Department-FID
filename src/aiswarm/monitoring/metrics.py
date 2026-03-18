@@ -31,7 +31,15 @@ ORDERS_SUBMITTED = Counter(
 ORDERS_FILLED = Counter("ais_orders_filled_total", "Orders filled", ["symbol"])
 PAPER_FILLS = Counter("ais_paper_fills_total", "Paper trading fills", ["symbol"])
 
-# Aster DEX connectivity metrics
+# Exchange connectivity metrics (generic, multi-exchange)
+EXCHANGE_LATENCY = Histogram(
+    "ais_exchange_latency_seconds", "Exchange MCP call latency", ["exchange", "tool"]
+)
+EXCHANGE_ERRORS = Counter(
+    "ais_exchange_errors_total", "Exchange MCP call errors", ["exchange", "tool"]
+)
+
+# Aster DEX connectivity metrics (backward-compatible aliases)
 ASTER_LATENCY = Histogram("ais_aster_latency_seconds", "Aster DEX MCP call latency", ["tool"])
 ASTER_ERRORS = Counter("ais_aster_errors_total", "Aster DEX MCP call errors", ["tool"])
 ASTER_DATA_FRESHNESS = Gauge(

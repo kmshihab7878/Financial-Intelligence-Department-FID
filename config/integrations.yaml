@@ -1,0 +1,6 @@
+# Integration configuration
+
+integrations:
+  tradingview:
+    enabled: false
+    port: 8001  # Webhook listener port (set via --tradingview-port CLI flag)

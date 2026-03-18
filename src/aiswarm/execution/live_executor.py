@@ -1,18 +1,17 @@
-"""Live order executor — submits orders to Aster DEX via MCP gateway.
+"""Live order executor — submits orders to exchange via ExchangeProvider.
 
 Bridges the gap between the OMS (token validation) and actual exchange execution.
-Uses the MCPGateway protocol for testability with MockMCPGateway.
+Uses the ExchangeProvider interface for exchange-agnostic order submission.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aiswarm.data.providers.aster_config import Venue
+from aiswarm.exchange.provider import ExchangeProvider
 from aiswarm.execution.aster_executor import AsterExecutor, ExecutionMode
-from aiswarm.execution.mcp_gateway import MCPGateway
 from aiswarm.execution.order_store import OrderStore
-from aiswarm.types.orders import Order
+from aiswarm.types.orders import Order, Side
 from aiswarm.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -29,55 +28,57 @@ class SubmissionResult:
 
 
 class LiveOrderExecutor:
-    """Submits orders to Aster DEX via MCP and tracks their lifecycle.
+    """Submits orders to exchange via ExchangeProvider and tracks their lifecycle.
 
-    Wraps AsterExecutor (parameter builder) + MCPGateway (tool invoker)
+    Wraps AsterExecutor (mode/validation) + ExchangeProvider (exchange calls)
     + OrderStore (persistence) into a single execution service.
     """
 
     def __init__(
         self,
         executor: AsterExecutor,
-        gateway: MCPGateway,
+        provider: ExchangeProvider,
         order_store: OrderStore,
-        default_venue: Venue = Venue.FUTURES,
+        default_venue: str = "futures",
     ) -> None:
         self.executor = executor
-        self.gateway = gateway
+        self.provider = provider
         self.order_store = order_store
         self.default_venue = default_venue
 
     def submit_order(
         self,
         order: Order,
-        venue: Venue | None = None,
+        venue: str | None = None,
     ) -> SubmissionResult:
         """Submit an order to the exchange.
 
         1. Track the order in OrderStore
-        2. Prepare MCP parameters via AsterExecutor
-        3. Invoke the MCP tool via gateway
-        4. Record the exchange order ID
+        2. Call ExchangeProvider.place_order()
+        3. Record the exchange order ID
         """
         venue = venue or self.default_venue
 
-        # Paper mode: simulate fill, don't call MCP
+        # Paper mode: simulate fill, don't call exchange
         if self.executor.mode == ExecutionMode.PAPER:
             return self._handle_paper(order)
 
         # Track the order
-        self.order_store.track(order, venue=venue.value)
+        self.order_store.track(order, venue=venue)
 
-        # Prepare and submit
+        # Submit via provider
         try:
-            if venue == Venue.FUTURES:
-                params = self.executor.prepare_futures_order(order)
-                tool_name = "mcp__aster__create_order"
-            else:
-                params = self.executor.prepare_spot_order(order)
-                tool_name = "mcp__aster__create_spot_order"
+            side_str = "BUY" if order.side == Side.BUY else "SELL"
+            order_type = "LIMIT" if order.limit_price else "MARKET"
 
-            response = self.gateway.call_tool(tool_name, params)
+            response = self.provider.place_order(
+                symbol=order.symbol,
+                side=side_str,
+                quantity=order.quantity,
+                order_type=order_type,
+                price=order.limit_price,
+                venue=venue,
+            )
             exchange_order_id = response.get("orderId", "")
 
             if not exchange_order_id:
@@ -127,7 +128,7 @@ class LiveOrderExecutor:
     def cancel_order(
         self,
         order_id: str,
-        venue: Venue | None = None,
+        venue: str | None = None,
     ) -> SubmissionResult:
         """Cancel an order on the exchange."""
         venue = venue or self.default_venue
@@ -148,13 +149,11 @@ class LiveOrderExecutor:
             )
 
         try:
-            params = self.executor.prepare_cancel_order(
+            self.provider.cancel_order(
                 symbol=record.order.symbol,
                 order_id=record.exchange_order_id,
                 venue=venue,
             )
-            tool_name = params.pop("tool")
-            self.gateway.call_tool(tool_name, params)
             self.order_store.record_cancel(order_id, reason="operator_cancel")
             return SubmissionResult(
                 success=True,
@@ -180,24 +179,22 @@ class LiveOrderExecutor:
         results: list[SubmissionResult] = []
 
         for symbol in symbols:
-            for venue in (Venue.FUTURES, Venue.SPOT):
+            for venue in ("futures", "spot"):
                 try:
-                    params = self.executor.prepare_cancel_all(symbol, venue)
-                    tool_name = params.pop("tool")
-                    self.gateway.call_tool(tool_name, params)
+                    self.provider.cancel_all_orders(symbol, venue)
                     results.append(
                         SubmissionResult(
                             success=True,
-                            order_id=f"cancel_symbol_{symbol}_{venue.value}",
+                            order_id=f"cancel_symbol_{symbol}_{venue}",
                             exchange_order_id=None,
-                            message=f"Surgical cancel {venue.value} for {symbol}",
+                            message=f"Surgical cancel {venue} for {symbol}",
                         )
                     )
                 except Exception as e:
                     results.append(
                         SubmissionResult(
                             success=False,
-                            order_id=f"cancel_symbol_{symbol}_{venue.value}",
+                            order_id=f"cancel_symbol_{symbol}_{venue}",
                             exchange_order_id=None,
                             message=f"Surgical cancel failed: {e}",
                         )
@@ -229,24 +226,22 @@ class LiveOrderExecutor:
         results: list[SubmissionResult] = []
 
         for symbol in symbols:
-            for venue in (Venue.FUTURES, Venue.SPOT):
+            for venue in ("futures", "spot"):
                 try:
-                    params = self.executor.prepare_cancel_all(symbol, venue)
-                    tool_name = params.pop("tool")
-                    self.gateway.call_tool(tool_name, params)
+                    self.provider.cancel_all_orders(symbol, venue)
                     results.append(
                         SubmissionResult(
                             success=True,
-                            order_id=f"cancel_all_{symbol}_{venue.value}",
+                            order_id=f"cancel_all_{symbol}_{venue}",
                             exchange_order_id=None,
-                            message=f"Cancel all {venue.value} for {symbol}",
+                            message=f"Cancel all {venue} for {symbol}",
                         )
                     )
                 except Exception as e:
                     results.append(
                         SubmissionResult(
                             success=False,
-                            order_id=f"cancel_all_{symbol}_{venue.value}",
+                            order_id=f"cancel_all_{symbol}_{venue}",
                             exchange_order_id=None,
                             message=f"Cancel all failed: {e}",
                         )

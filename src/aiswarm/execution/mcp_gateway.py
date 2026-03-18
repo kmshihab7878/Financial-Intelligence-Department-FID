@@ -1,21 +1,17 @@
 """MCP Gateway — abstraction for invoking MCP tools.
 
-Provides a protocol for calling MCP tools (Aster DEX) from Python code.
+Provides a protocol for calling MCP tools from Python code.
 Concrete implementations:
   - MockMCPGateway: For testing (returns canned responses)
-  - AsterMCPGateway: For live/shadow trading (calls real Aster DEX via HTTP)
+  - AsterMCPGateway: Thin wrapper around HTTPMCPGateway for Aster DEX
+  - HTTPMCPGateway: Generic HTTP gateway for any exchange (see http_mcp_gateway.py)
 """
 
 from __future__ import annotations
 
-import time
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-import httpx
-
-from aiswarm.resilience.circuit_breaker import CircuitBreaker
-from aiswarm.resilience.rate_limiter import TokenBucketRateLimiter
 from aiswarm.utils.logging import get_logger
 from aiswarm.utils.time import utc_now
 
@@ -45,10 +41,10 @@ class MCPCallRecord:
 
 
 class AsterMCPGateway:
-    """Production MCP gateway — calls Aster DEX MCP server via HTTP.
+    """Production MCP gateway for Aster DEX.
 
-    Integrates circuit breaker and rate limiter for resilience against
-    exchange rate limits and outages.
+    Thin wrapper around HTTPMCPGateway with exchange_name='aster'.
+    Kept for backward compatibility — new code should use HTTPMCPGateway directly.
     """
 
     def __init__(
@@ -59,93 +55,36 @@ class AsterMCPGateway:
         circuit_failure_threshold: int = 5,
         circuit_recovery_timeout: float = 30.0,
     ) -> None:
-        self.server_url = server_url.rstrip("/")
-        self.timeout = timeout
-        self.call_history: list[MCPCallRecord] = []
-        self._client = httpx.Client(timeout=timeout)
+        from aiswarm.execution.http_mcp_gateway import HTTPMCPGateway
 
-        # Resilience: rate limiter + circuit breaker
-        self._rate_limiter = TokenBucketRateLimiter(
-            name="aster_mcp",
-            max_tokens=rate_limit_rps * 2,
-            refill_rate=rate_limit_rps,
-        )
-        self._circuit_breaker = CircuitBreaker(
-            name="aster_mcp",
-            failure_threshold=circuit_failure_threshold,
-            recovery_timeout=circuit_recovery_timeout,
+        self._inner = HTTPMCPGateway(
+            server_url=server_url,
+            exchange_name="aster",
+            timeout=timeout,
+            rate_limit_rps=rate_limit_rps,
+            circuit_failure_threshold=circuit_failure_threshold,
+            circuit_recovery_timeout=circuit_recovery_timeout,
         )
 
     def call_tool(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any]:
-        """Invoke an MCP tool on the Aster DEX server.
-
-        Respects rate limits and circuit breaker. Raises on failure.
-        """
-        from aiswarm.monitoring import metrics as m
-
-        # Circuit breaker check
-        if not self._circuit_breaker.allow_request():
-            m.ASTER_ERRORS.labels(tool=tool_name).inc()
-            raise ConnectionError(f"Circuit breaker OPEN for aster_mcp — skipping {tool_name}")
-
-        # Rate limit
-        if not self._rate_limiter.wait_and_acquire(timeout=self.timeout):
-            m.ASTER_ERRORS.labels(tool=tool_name).inc()
-            raise TimeoutError(f"Rate limiter timeout for {tool_name}")
-
-        start = time.monotonic()
-        try:
-            response = self._client.post(
-                f"{self.server_url}/call-tool",
-                json={"tool_name": tool_name, "params": params},
-                timeout=self.timeout,
-            )
-            response.raise_for_status()
-            result: dict[str, Any] = response.json()
-
-            self._circuit_breaker.record_success()
-            elapsed = time.monotonic() - start
-            m.ASTER_LATENCY.labels(tool=tool_name).observe(elapsed)
-
-            record = MCPCallRecord(tool_name=tool_name, params=params, response=result)
-            self.call_history.append(record)
-
-            logger.info(
-                "MCP call",
-                extra={
-                    "extra_json": {
-                        "tool": tool_name,
-                        "latency_ms": round(elapsed * 1000, 1),
-                    }
-                },
-            )
-            return result
-
-        except Exception as e:
-            self._circuit_breaker.record_failure()
-            elapsed = time.monotonic() - start
-            m.ASTER_LATENCY.labels(tool=tool_name).observe(elapsed)
-            m.ASTER_ERRORS.labels(tool=tool_name).inc()
-
-            logger.error(
-                "MCP call failed",
-                extra={
-                    "extra_json": {
-                        "tool": tool_name,
-                        "error": str(e),
-                        "latency_ms": round(elapsed * 1000, 1),
-                    }
-                },
-            )
-            raise
+        """Delegate to HTTPMCPGateway."""
+        return self._inner.call_tool(tool_name, params)
 
     @property
-    def circuit_breaker(self) -> CircuitBreaker:
-        return self._circuit_breaker
+    def call_history(self) -> list[MCPCallRecord]:
+        return self._inner.call_history
 
     @property
-    def rate_limiter(self) -> TokenBucketRateLimiter:
-        return self._rate_limiter
+    def circuit_breaker(self) -> Any:
+        return self._inner.circuit_breaker
+
+    @property
+    def rate_limiter(self) -> Any:
+        return self._inner.rate_limiter
+
+    @property
+    def server_url(self) -> str:
+        return self._inner.server_url
 
 
 class MockMCPGateway:

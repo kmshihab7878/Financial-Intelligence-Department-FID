@@ -1,6 +1,6 @@
 """Simple momentum agent.
 
-Consumes OHLCV candle data from Aster DEX (mcp__aster__get_klines)
+Consumes OHLCV candle data from exchange via ExchangeProvider
 and generates momentum signals based on moving average crossovers
 and price position relative to moving averages.
 

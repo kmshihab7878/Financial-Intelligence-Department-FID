@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aiswarm.execution.aster_executor import AsterExecutor
-from aiswarm.execution.mcp_gateway import MCPGateway
+from aiswarm.exchange.provider import ExchangeProvider
 from aiswarm.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -30,11 +29,9 @@ class AccountSetupService:
 
     def __init__(
         self,
-        executor: AsterExecutor,
-        gateway: MCPGateway,
+        provider: ExchangeProvider,
     ) -> None:
-        self.executor = executor
-        self.gateway = gateway
+        self.provider = provider
         self._configured_symbols: set[str] = set()
 
     def setup_symbol(
@@ -53,9 +50,10 @@ class AccountSetupService:
 
         # Set margin mode first
         try:
-            params = self.executor.prepare_set_margin_mode(symbol, margin_mode)
-            tool_name = params.pop("tool")
-            self.gateway.call_tool(tool_name, params)
+            self.provider.set_margin_mode(symbol, margin_mode)
+            margin_ok = True
+        except NotImplementedError:
+            # Exchange doesn't support margin mode — that's OK
             margin_ok = True
         except Exception as e:
             messages.append(f"Margin mode failed: {e}")
@@ -66,9 +64,10 @@ class AccountSetupService:
 
         # Set leverage
         try:
-            params = self.executor.prepare_set_leverage(symbol, leverage)
-            tool_name = params.pop("tool")
-            self.gateway.call_tool(tool_name, params)
+            self.provider.set_leverage(symbol, leverage)
+            leverage_ok = True
+        except NotImplementedError:
+            # Exchange doesn't support leverage — that's OK
             leverage_ok = True
         except Exception as e:
             messages.append(f"Leverage failed: {e}")

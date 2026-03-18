@@ -165,6 +165,15 @@ class Coordinator:
         )
         return None
 
+    def inject_external_signal(self, signal: Signal) -> Order | None:
+        """Process a single externally-injected signal through the full pipeline.
+
+        Used for TradingView webhooks and other external signal sources.
+        The signal bypasses arbitration (it's already selected) but goes
+        through allocation, mandate validation, and risk checks.
+        """
+        return self.coordinate([signal])
+
     def reject_staged(self, order_id: str, reason: str) -> Order | None:
         """Reject a staged order."""
         order = self._staged_orders.pop(order_id, None)

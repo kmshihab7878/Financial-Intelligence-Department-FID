@@ -8,6 +8,7 @@ from typing import Any
 
 from aiswarm.agents.base import Agent
 from aiswarm.data.event_store import EventStore
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.account_setup import AccountSetupService
 from aiswarm.execution.aster_executor import AsterExecutor, ExecutionMode
 from aiswarm.execution.fill_tracker import FillTracker
@@ -87,14 +88,15 @@ def _build_loop(
     )
     gateway.set_response("mcp__aster__get_positions", [])
 
+    provider = AsterExchangeProvider(gateway)
     memory = SharedMemory()
     executor = AsterExecutor(mode=ExecutionMode.PAPER)
     store = OrderStore(es)
-    live_executor = LiveOrderExecutor(executor, gateway, store)
-    fill_tracker = FillTracker(gateway, store, memory)
-    portfolio_sync = PortfolioSyncService(gateway, memory)
-    account_setup = AccountSetupService(executor, gateway)
-    market_data = MarketDataService(gateway)
+    live_executor = LiveOrderExecutor(executor, provider, store)
+    fill_tracker = FillTracker(provider, store, memory)
+    portfolio_sync = PortfolioSyncService(provider, memory)
+    account_setup = AccountSetupService(provider)
+    market_data = MarketDataService(provider)
 
     # Session manager — optionally pre-activate
     session_mgr = SessionManager(es)
@@ -152,7 +154,7 @@ def _build_loop(
         session_manager=session_mgr,
         reconciliation_loop=recon_loop,
         shutdown=shutdown,
-        gateway=gateway,
+        exchange_provider=provider,
         memory=memory,
         agents=agents or [StubAgent()],
         market_data=market_data,
@@ -257,7 +259,9 @@ class TestTradingLoop:
         loop._run_cycle()
 
         # Should have fetched data for both symbols
-        tools = [c.tool_name for c in loop.gateway.call_history]  # type: ignore[union-attr]
+        # Access the underlying gateway via the provider
+        gw = loop.exchange_provider.gateway  # type: ignore[attr-defined]
+        tools = [c.tool_name for c in gw.call_history]
         kline_calls = [t for t in tools if t == "mcp__aster__get_klines"]
         assert len(kline_calls) >= 2
 

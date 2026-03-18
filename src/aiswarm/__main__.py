@@ -51,6 +51,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Aster DEX MCP server URL (overrides AIS_MCP_SERVER_URL env var)",
     )
     parser.add_argument(
+        "--exchange",
+        default=None,
+        help="Default exchange to use (e.g. aster, binance, coinbase, bybit, ib)",
+    )
+    parser.add_argument(
+        "--exchanges",
+        default=None,
+        help="Comma-separated list of exchanges to enable (e.g. aster,binance)",
+    )
+    parser.add_argument(
+        "--tradingview-port",
+        type=int,
+        default=None,
+        help="Port for TradingView webhook listener (enables TV integration)",
+    )
+    parser.add_argument(
         "--api-host",
         default="0.0.0.0",  # nosec B104 — intentional for container deployment
         help="API server host (default: 0.0.0.0)",

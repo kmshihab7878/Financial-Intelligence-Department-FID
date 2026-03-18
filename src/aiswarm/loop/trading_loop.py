@@ -14,11 +14,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from aiswarm.agents.base import Agent
-from aiswarm.data.providers.aster import AsterDataProvider
+from aiswarm.exchange.provider import ExchangeProvider
 from aiswarm.execution.account_setup import AccountSetupService
 from aiswarm.execution.fill_tracker import FillTracker
 from aiswarm.execution.live_executor import LiveOrderExecutor
-from aiswarm.execution.mcp_gateway import MCPGateway
 from aiswarm.execution.portfolio_sync import PortfolioSyncService
 from aiswarm.loop.config import LoopConfig
 from aiswarm.loop.market_data import MarketDataService
@@ -85,7 +84,7 @@ class TradingLoop:
         session_manager: SessionManager,
         reconciliation_loop: ReconciliationLoop,
         shutdown: GracefulShutdown,
-        gateway: MCPGateway,
+        exchange_provider: ExchangeProvider,
         memory: SharedMemory,
         agents: list[Agent],
         market_data: MarketDataService,
@@ -101,13 +100,12 @@ class TradingLoop:
         self.session_manager = session_manager
         self.reconciliation_loop = reconciliation_loop
         self.shutdown = shutdown
-        self.gateway = gateway
+        self.exchange_provider = exchange_provider
         self.memory = memory
         self.agents = agents
         self.market_data = market_data
         self.config = config or LoopConfig()
         self.state = LoopState()
-        self.provider = AsterDataProvider()
         self.alert_dispatcher = alert_dispatcher or AlertDispatcher()
         self.stop_loss_monitor = stop_loss_monitor
 
@@ -266,6 +264,21 @@ class TradingLoop:
 
         # 3. Fetch market data and run agents for each symbol
         all_signals: list[Signal] = []
+
+        # 3a. Drain external signals (TradingView webhooks, etc.)
+        try:
+            from aiswarm.integrations.tradingview.webhook import drain_signals
+
+            external = drain_signals()
+            all_signals.extend(external)
+            if external:
+                logger.info(
+                    "External signals received",
+                    extra={"extra_json": {"count": len(external)}},
+                )
+        except ImportError:
+            pass  # TradingView integration not available
+
         for symbol in self.config.symbols:
             try:
                 symbol_signals = self._process_symbol(symbol)
@@ -440,8 +453,7 @@ class TradingLoop:
         """Run position reconciliation against exchange state."""
         # Fetch exchange positions
         try:
-            raw_positions = self.gateway.call_tool("mcp__aster__get_positions", {})
-            exchange_positions = self.provider.parse_positions_response(raw_positions)
+            exchange_positions = self.exchange_provider.get_positions()
         except Exception:
             exchange_positions = []
 

@@ -226,12 +226,16 @@ def trigger_kill_switch(
         extra={"extra_json": {"reason": req.reason}},
     )
 
-    # Prepare emergency cancel instructions
+    # Prepare emergency cancel instructions (exchange-agnostic)
     symbols = WHITELISTED_SYMBOLS
     cancel_instructions = []
     for symbol in symbols:
-        cancel_instructions.append({"tool": "mcp__aster__cancel_all_orders", "symbol": symbol})
-        cancel_instructions.append({"tool": "mcp__aster__cancel_spot_all_orders", "symbol": symbol})
+        cancel_instructions.append(
+            {"action": "cancel_all_orders", "venue": "futures", "symbol": symbol}
+        )
+        cancel_instructions.append(
+            {"action": "cancel_all_orders", "venue": "spot", "symbol": symbol}
+        )
 
     return {
         "action": "killed",
@@ -255,8 +259,12 @@ def cancel_all_orders(
     symbols = req.symbols or WHITELISTED_SYMBOLS
     cancel_instructions = []
     for symbol in symbols:
-        cancel_instructions.append({"tool": "mcp__aster__cancel_all_orders", "symbol": symbol})
-        cancel_instructions.append({"tool": "mcp__aster__cancel_spot_all_orders", "symbol": symbol})
+        cancel_instructions.append(
+            {"action": "cancel_all_orders", "venue": "futures", "symbol": symbol}
+        )
+        cancel_instructions.append(
+            {"action": "cancel_all_orders", "venue": "spot", "symbol": symbol}
+        )
 
     logger.warning(
         "Cancel-all requested by operator",
@@ -296,13 +304,14 @@ def force_deleverage(
         "symbol": req.symbol,
         "reduce_pct": req.reduce_pct,
         "instruction": {
-            "tool": "mcp__aster__create_order",
+            "action": "create_order",
+            "venue": "futures",
             "symbol": req.symbol,
             "side": "SELL",  # Operator must set correct side based on position
             "order_type": "MARKET",
             "reduce_only": True,
             "note": "Set side to SELL for long positions, BUY for short positions. "
-            "Set quantity based on current position size × reduce_pct.",
+            "Set quantity based on current position size x reduce_pct.",
         },
         "timestamp": utc_now().isoformat(),
     }

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from aiswarm.exchange.providers.aster import AsterExchangeProvider
 from aiswarm.execution.mcp_gateway import MockMCPGateway
 from aiswarm.loop.market_data import MarketDataService
 
@@ -11,39 +12,110 @@ class TestMarketDataService:
         gateway = MockMCPGateway()
         gateway.set_response(
             "mcp__aster__get_klines",
-            {"data": [{"open": "100", "high": "110", "low": "90", "close": "105"}]},
+            [
+                {
+                    "openTime": 1700000000000,
+                    "open": "100",
+                    "high": "110",
+                    "low": "90",
+                    "close": "105",
+                    "volume": "1000",
+                }
+            ],
         )
         gateway.set_response(
             "mcp__aster__get_funding_rate",
-            {"fundingRate": "0.0001", "symbol": "BTCUSDT"},
+            {
+                "symbol": "BTCUSDT",
+                "lastFundingRate": "0.0001",
+                "markPrice": "50000",
+            },
+        )
+        gateway.set_response(
+            "mcp__aster__get_ticker",
+            {
+                "symbol": "BTCUSDT",
+                "lastPrice": "50000",
+                "highPrice": "51000",
+                "lowPrice": "49000",
+                "volume": "1000",
+                "priceChangePercent": "1.5",
+            },
+        )
+        gateway.set_response(
+            "mcp__aster__get_order_book",
+            {
+                "bids": [["50000", "1.0"]],
+                "asks": [["50100", "1.0"]],
+            },
         )
 
-        svc = MarketDataService(gateway)
+        provider = AsterExchangeProvider(gateway)
+        svc = MarketDataService(provider)
         data = svc.fetch_symbol_data("BTCUSDT")
 
         assert data.symbol == "BTCUSDT"
         assert data.klines_raw is not None
         assert data.funding_raw is not None
-        assert data.ticker_raw is not None  # Default response
-        assert data.orderbook_raw is not None  # Default response
+        assert data.ticker_raw is not None
+        assert data.orderbook_raw is not None
 
     def test_fetch_handles_errors_gracefully(self) -> None:
-        """If a tool call raises, returns None for that field."""
+        """If provider calls raise, returns None for that field."""
+        from unittest.mock import MagicMock
 
-        class FailingGateway:
-            def call_tool(self, tool_name: str, params: dict) -> dict:
-                raise ConnectionError("network down")
+        provider = MagicMock()
+        provider.get_klines.return_value = []
+        provider.get_funding_rate.return_value = None
+        provider.get_ticker.return_value = None
+        provider.get_order_book.return_value = None
 
-        svc = MarketDataService(FailingGateway())  # type: ignore[arg-type]
+        svc = MarketDataService(provider)
         data = svc.fetch_symbol_data("BTCUSDT")
 
         assert data.symbol == "BTCUSDT"
-        assert data.klines_raw is None
+        assert data.klines_raw is None  # empty list -> None
         assert data.funding_raw is None
+        assert data.ticker_raw is None
+        assert data.orderbook_raw is None
 
     def test_build_agent_context(self) -> None:
         gateway = MockMCPGateway()
-        svc = MarketDataService(gateway)
+        gateway.set_response(
+            "mcp__aster__get_klines",
+            [
+                {
+                    "openTime": 1700000000000,
+                    "open": "100",
+                    "high": "110",
+                    "low": "90",
+                    "close": "105",
+                    "volume": "1000",
+                }
+            ],
+        )
+        gateway.set_response(
+            "mcp__aster__get_funding_rate",
+            {"symbol": "ETHUSDT", "lastFundingRate": "0.0001", "markPrice": "3000"},
+        )
+        gateway.set_response(
+            "mcp__aster__get_ticker",
+            {
+                "symbol": "ETHUSDT",
+                "lastPrice": "3000",
+                "highPrice": "3100",
+                "lowPrice": "2900",
+                "volume": "500",
+                "priceChangePercent": "2.0",
+            },
+        )
+        gateway.set_response(
+            "mcp__aster__get_order_book",
+            {"bids": [["3000", "1.0"]], "asks": [["3010", "1.0"]]},
+        )
+
+        provider = AsterExchangeProvider(gateway)
+        svc = MarketDataService(provider)
         data = svc.fetch_symbol_data("ETHUSDT")
         ctx = svc.build_agent_context(data)
 
@@ -53,12 +125,15 @@ class TestMarketDataService:
 
     def test_build_agent_context_no_data(self) -> None:
         """Context excludes keys when raw data is None."""
+        from unittest.mock import MagicMock
 
-        class NullGateway:
-            def call_tool(self, tool_name: str, params: dict) -> dict:
-                raise RuntimeError("no data")
+        provider = MagicMock()
+        provider.get_klines.return_value = []
+        provider.get_funding_rate.return_value = None
+        provider.get_ticker.return_value = None
+        provider.get_order_book.return_value = None
 
-        svc = MarketDataService(NullGateway())  # type: ignore[arg-type]
+        svc = MarketDataService(provider)
         data = svc.fetch_symbol_data("BTCUSDT")
         ctx = svc.build_agent_context(data)
 
@@ -66,7 +141,8 @@ class TestMarketDataService:
 
     def test_records_mcp_calls(self) -> None:
         gateway = MockMCPGateway()
-        svc = MarketDataService(gateway)
+        provider = AsterExchangeProvider(gateway)
+        svc = MarketDataService(provider)
         svc.fetch_symbol_data("BTCUSDT")
 
         tools = [c.tool_name for c in gateway.call_history]
@@ -77,8 +153,12 @@ class TestMarketDataService:
 
     def test_liquidity_score_default(self) -> None:
         gateway = MockMCPGateway()
-        svc = MarketDataService(gateway)
+        gateway.set_response(
+            "mcp__aster__get_order_book",
+            {"bids": [["50000", "1.0"]], "asks": [["50100", "1.0"]]},
+        )
+        provider = AsterExchangeProvider(gateway)
+        svc = MarketDataService(provider)
         data = svc.fetch_symbol_data("BTCUSDT")
-        # Default orderbook response won't parse to a real OrderBook
         score = svc.compute_liquidity_score(data)
         assert 0.0 <= score <= 1.0

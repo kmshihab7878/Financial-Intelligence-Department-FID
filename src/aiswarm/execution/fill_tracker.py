@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from aiswarm.data.providers.aster import AsterDataProvider, TradeRecord
 from aiswarm.data.providers.aster_config import normalize_symbol
-from aiswarm.execution.mcp_gateway import MCPGateway
+from aiswarm.exchange.provider import ExchangeProvider
+from aiswarm.exchange.types import TradeRecord
 from aiswarm.execution.order_store import OrderRecord, OrderStore
 from aiswarm.orchestration.memory import SharedMemory
 from aiswarm.utils.logging import get_logger
@@ -33,31 +33,25 @@ class FillTracker:
 
     def __init__(
         self,
-        gateway: MCPGateway,
+        provider: ExchangeProvider,
         order_store: OrderStore,
         memory: SharedMemory,
-        provider: AsterDataProvider | None = None,
     ) -> None:
-        self.gateway = gateway
+        self.provider = provider
         self.order_store = order_store
         self.memory = memory
-        self.provider = provider or AsterDataProvider()
 
     def sync_fills(self, symbol: str) -> FillSyncResult:
         """Poll exchange for recent trades and match them to tracked orders.
 
         For each exchange trade:
           1. Skip if already matched (known exchange ID)
-          2. Try to match by exchange order ID → internal order
+          2. Try to match by exchange order ID -> internal order
           3. Record the fill in OrderStore
           4. Update mandate P&L tracking
         """
-        response = self.gateway.call_tool(
-            "mcp__aster__get_my_trades",
-            {"symbol": symbol},
-        )
+        trades = self.provider.get_my_trades(symbol)
 
-        trades = self.provider.parse_trades_response(response)
         if not trades:
             return FillSyncResult(
                 matched_fills=0,
@@ -142,8 +136,5 @@ class FillTracker:
         if record is None or record.exchange_order_id is None:
             return None
 
-        response = self.gateway.call_tool(
-            "mcp__aster__get_order",
-            {"symbol": symbol, "order_id": record.exchange_order_id},
-        )
+        response = self.provider.get_order_status(symbol, record.exchange_order_id)
         return response.get("status")

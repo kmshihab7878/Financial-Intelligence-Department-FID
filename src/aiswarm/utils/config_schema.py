@@ -165,6 +165,38 @@ class StagingConfig(BaseModel):
     model_config = {"extra": "forbid"}
 
 
+class ExchangeConfigSchema(BaseModel):
+    """Schema for a single exchange configuration."""
+
+    exchange_id: str
+    enabled: bool = True
+    is_default: bool = False
+    mcp_server_url: str = ""
+    rate_limit_rps: float = Field(default=5.0, ge=0.1)
+    timeout_seconds: float = Field(default=10.0, ge=1.0)
+    account_id: str = ""
+    symbols: list[str] = []
+
+    model_config = {"extra": "forbid"}
+
+
+class TradingViewConfig(BaseModel):
+    """TradingView webhook integration configuration."""
+
+    enabled: bool = False
+    port: int = Field(default=8001, ge=1, le=65535)
+
+    model_config = {"extra": "forbid"}
+
+
+class IntegrationsConfig(BaseModel):
+    """External integrations configuration."""
+
+    tradingview: TradingViewConfig = TradingViewConfig()
+
+    model_config = {"extra": "forbid"}
+
+
 # ---------------------------------------------------------------------------
 # Top-level schema
 # ---------------------------------------------------------------------------
@@ -190,9 +222,13 @@ class AISConfig(BaseModel):
     alerting: AlertingConfig = AlertingConfig()
     session: SessionConfig = SessionConfig()
     staging: StagingConfig = StagingConfig()
+    integrations: IntegrationsConfig = IntegrationsConfig()
 
     # Mandates is a top-level list
     mandates: list[MandateConfig] = []
+
+    # Exchanges list (optional — defaults to Aster-only)
+    exchanges: list[ExchangeConfigSchema] = []
 
     model_config = {"extra": "forbid"}
 
