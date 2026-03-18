@@ -163,7 +163,9 @@ class AsterExchangeProvider(ExchangeProvider):
         if price is not None:
             params["price"] = price
             params["time_in_force"] = kwargs.get("time_in_force", "GTC")
-        params.update({k: v for k, v in kwargs.items() if k != "time_in_force"})
+        # Allow only safe kwargs — prevent override of security-critical fields
+        _BLOCKED = {"account_id", "symbol", "side", "time_in_force"}
+        params.update({k: v for k, v in kwargs.items() if k not in _BLOCKED})
 
         tool = _TOOL_CREATE_ORDER if venue == "futures" else _TOOL_CREATE_SPOT_ORDER
         return self.gateway.call_tool(tool, params)

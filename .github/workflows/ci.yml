@@ -66,8 +66,10 @@ jobs:
         run: bandit -r src/aiswarm/ -c pyproject.toml || bandit -r src/aiswarm/ -ll
       - name: Check for secrets
         run: |
-          if grep -r "STAKE_API_KEY=.\{10,\}" .env 2>/dev/null; then
-            echo "ERROR: Real API key found in .env"
+          # Scan for real API keys in .env files and source code
+          PATTERNS="AIS_API_KEY=.\{10,\}\|AIS_RISK_HMAC_SECRET=.\{10,\}\|BINANCE_API_KEY=.\{10,\}\|COINBASE_API_KEY=.\{10,\}\|BYBIT_API_KEY=.\{10,\}\|AKIA[0-9A-Z]\{16\}"
+          if grep -r "$PATTERNS" .env src/ config/ 2>/dev/null | grep -v "test-secret\|\.example\|\.py:.*#"; then
+            echo "ERROR: Potential real secret found in tracked files"
             exit 1
           fi
 

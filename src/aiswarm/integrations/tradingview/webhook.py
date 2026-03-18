@@ -89,7 +89,9 @@ async def receive_tradingview_alert(request: Request) -> dict[str, Any]:
     try:
         payload = TVAlertPayload(**body)
     except Exception as e:
-        logger.warning("TradingView webhook invalid payload", extra={"extra_json": {"error": str(e)}})
+        logger.warning(
+            "TradingView webhook invalid payload", extra={"extra_json": {"error": str(e)}}
+        )
         raise HTTPException(status_code=422, detail="Invalid payload format")
 
     # Authentication
@@ -103,9 +105,15 @@ async def receive_tradingview_alert(request: Request) -> dict[str, Any]:
     # Convert to Signal
     signal = _tv_to_signal(payload)
 
-    # Enqueue
+    # Enqueue (maxlen=100 drops oldest signals if full)
     with _queue_lock:
+        was_full = len(_signal_queue) >= (_signal_queue.maxlen or 100)
         _signal_queue.append(signal)
+        if was_full:
+            logger.warning(
+                "TradingView signal queue full — oldest signal dropped",
+                extra={"extra_json": {"queue_size": len(_signal_queue)}},
+            )
 
     logger.info(
         "TradingView signal received",
