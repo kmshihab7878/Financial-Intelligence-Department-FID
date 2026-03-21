@@ -1,0 +1,126 @@
+site_name: "AIS — Autonomous Investment Swarm"
+site_description: "Risk-gated autonomous trading system with multi-agent orchestration"
+site_url: "https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/"
+repo_url: "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID"
+repo_name: "kmshihab7878/Financial-Intelligence-Department-FID"
+edit_uri: "edit/main/docs/"
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+
+plugins:
+  - search
+  - autorefs
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kmshihab7878/Financial-Intelligence-Department-FID
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Agent System: architecture/agents.md
+    - Risk Engine: architecture/risk-engine.md
+    - Execution Engine: architecture/execution.md
+    - Portfolio Engine: architecture/portfolio.md
+    - Data Model: architecture/data-model.md
+    - Exchange Layer: architecture/exchange-layer.md
+  - Guides:
+    - Strategy Development: guides/strategy-development.md
+    - Backtesting: guides/backtesting.md
+    - Multi-Exchange Setup: guides/multi-exchange.md
+    - Deployment: guides/deployment.md
+    - Monitoring: guides/monitoring.md
+  - Reference:
+    - API: reference/api.md
+    - Configuration: reference/configuration.md
+    - Metrics: reference/metrics.md
+    - Decision Log: reference/decision-log.md
+    - Quantitative Tools: reference/quant-tools.md
+  - Operations:
+    - Risk Policy: operations/risk-policy.md
+    - Operating Model: operations/operating-model.md
+    - Session Lifecycle: operations/sessions.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md

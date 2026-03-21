@@ -1,0 +1,36 @@
+:root {
+  --md-primary-fg-color: #5e35b1;
+  --md-primary-fg-color--light: #7e57c2;
+  --md-primary-fg-color--dark: #4527a0;
+}
+
+.md-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+/* Feature grid for landing page */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.grid-item {
+  padding: 1.25rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.grid-item:hover {
+  border-color: var(--md-primary-fg-color);
+}
+
+.grid-item h3 {
+  margin-top: 0;
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7e57c2"/>
+      <stop offset="100%" style="stop-color:#ffb74d"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="120" rx="12" fill="url(#bg)"/>
+  <rect x="40" y="85" width="520" height="3" rx="1.5" fill="url(#accent)" opacity="0.6"/>
+  <text x="300" y="52" text-anchor="middle" fill="#ffffff" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700" letter-spacing="2">AIS</text>
+  <text x="300" y="76" text-anchor="middle" fill="#b0bec5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="400" letter-spacing="1">AUTONOMOUS INVESTMENT SWARM</text>
+</svg>
