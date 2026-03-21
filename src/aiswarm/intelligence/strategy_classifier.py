@@ -61,8 +61,8 @@ class StrategyClassifier:
         typical_hour = self._most_common_hour(with_pnl)
 
         # Exit patterns
-        winners = [a for a in with_pnl if a.pnl > 0]
-        losers = [a for a in with_pnl if a.pnl < 0]
+        winners = [a for a in with_pnl if a.pnl is not None and a.pnl > 0]
+        losers = [a for a in with_pnl if a.pnl is not None and a.pnl < 0]
         avg_winner_hold = self._avg_holding(winners)
         avg_loser_hold = self._avg_holding(losers)
         uses_stop = avg_loser_hold < avg_winner_hold * 0.5 if avg_winner_hold > 0 else False
@@ -74,7 +74,11 @@ class StrategyClassifier:
         scales_out = self._detects_scaling_out(activities)
 
         # Market condition preferences
-        prefers_trending = style in (TradingStyle.MOMENTUM, TradingStyle.TREND_FOLLOWING, TradingStyle.BREAKOUT)
+        prefers_trending = style in (
+            TradingStyle.MOMENTUM,
+            TradingStyle.TREND_FOLLOWING,
+            TradingStyle.BREAKOUT,
+        )
         prefers_ranging = style in (TradingStyle.MEAN_REVERSION, TradingStyle.SCALPER)
 
         # Confidence based on sample size

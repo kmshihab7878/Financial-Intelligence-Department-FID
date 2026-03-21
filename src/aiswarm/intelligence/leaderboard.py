@@ -27,7 +27,9 @@ class LeaderboardTracker:
 
     def __init__(self, store: AlphaStore) -> None:
         self.store = store
-        self._latest_entries: dict[str, dict[str, LeaderboardEntry]] = {}  # exchange → {trader_id → entry}
+        self._latest_entries: dict[
+            str, dict[str, LeaderboardEntry]
+        ] = {}  # exchange → {trader_id → entry}
 
     def ingest_leaderboard(
         self,

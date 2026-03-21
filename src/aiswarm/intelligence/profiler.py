@@ -123,7 +123,7 @@ class TraderProfiler:
         with_pnl = [a for a in activities if a.pnl is not None]
         if not with_pnl:
             return 0.0
-        wins = sum(1 for a in with_pnl if a.pnl > 0)
+        wins = sum(1 for a in with_pnl if a.pnl is not None and a.pnl > 0)
         return wins / len(with_pnl)
 
     def _compute_sharpe(self, returns: list[float], periods_per_year: float = 365.0) -> float:
@@ -145,7 +145,7 @@ class TraderProfiler:
         downside = [r for r in returns if r < 0]
         if not downside:
             return float("inf") if mean > 0 else 0.0
-        down_var = sum(r ** 2 for r in downside) / len(downside)
+        down_var = sum(r**2 for r in downside) / len(downside)
         down_std = math.sqrt(down_var) if down_var > 0 else 0.0
         if down_std == 0:
             return 0.0
@@ -223,7 +223,7 @@ class TraderProfiler:
             chunk = with_pnl[i : i + chunk_size]
             if len(chunk) < 3:
                 continue
-            wr = sum(1 for a in chunk if a.pnl > 0) / len(chunk)
+            wr = sum(1 for a in chunk if a.pnl is not None and a.pnl > 0) / len(chunk)
             chunk_win_rates.append(wr)
 
         if len(chunk_win_rates) < 2:

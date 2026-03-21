@@ -99,9 +99,7 @@ class TestAlphaFollowerAgent:
         assert result["signal"] is None
         assert result["reason"] == "no_recent_activity"
 
-    def test_signal_from_elite_trader(
-        self, store: AlphaStore, agent: AlphaFollowerAgent
-    ) -> None:
+    def test_signal_from_elite_trader(self, store: AlphaStore, agent: AlphaFollowerAgent) -> None:
         _seed_elite_trader(store)
         result = agent.analyze({"symbol": "BTCUSDT"})
         assert result["signal"] is not None
@@ -111,17 +109,13 @@ class TestAlphaFollowerAgent:
         assert signal.strategy == "alpha_follower"
         assert "elite" in signal.thesis.lower()
 
-    def test_weak_trader_filtered(
-        self, store: AlphaStore, agent: AlphaFollowerAgent
-    ) -> None:
+    def test_weak_trader_filtered(self, store: AlphaStore, agent: AlphaFollowerAgent) -> None:
         _seed_weak_trader(store)
         result = agent.analyze({"symbol": "BTCUSDT"})
         # Weak traders should not generate signals (min tier = NOTABLE)
         assert result["signal"] is None
 
-    def test_elite_preferred_over_weak(
-        self, store: AlphaStore, agent: AlphaFollowerAgent
-    ) -> None:
+    def test_elite_preferred_over_weak(self, store: AlphaStore, agent: AlphaFollowerAgent) -> None:
         _seed_elite_trader(store)
         _seed_weak_trader(store)
         result = agent.analyze({"symbol": "BTCUSDT"})
@@ -129,9 +123,7 @@ class TestAlphaFollowerAgent:
         # Signal should come from the elite trader
         assert result["signal"].direction == 1  # Elite trader's direction
 
-    def test_stale_activity_ignored(
-        self, store: AlphaStore, agent: AlphaFollowerAgent
-    ) -> None:
+    def test_stale_activity_ignored(self, store: AlphaStore, agent: AlphaFollowerAgent) -> None:
         # Create an elite trader with OLD activity (beyond max_activity_age)
         store.upsert_profile(
             TraderProfile(
@@ -164,9 +156,7 @@ class TestAlphaFollowerAgent:
         _seed_elite_trader(store)
         assert agent.validate({"symbol": "BTCUSDT"}) is True
 
-    def test_validate_returns_false_without_data(
-        self, agent: AlphaFollowerAgent
-    ) -> None:
+    def test_validate_returns_false_without_data(self, agent: AlphaFollowerAgent) -> None:
         assert agent.validate({"symbol": "BTCUSDT"}) is False
 
     def test_propose_delegates_to_analyze(

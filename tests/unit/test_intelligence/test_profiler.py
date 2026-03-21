@@ -56,9 +56,7 @@ class TestTraderProfiler:
         assert profile.total_trades == 0
         assert profile.tier == TraderTier.AVERAGE
 
-    def test_build_profile_with_data(
-        self, store: AlphaStore, profiler: TraderProfiler
-    ) -> None:
+    def test_build_profile_with_data(self, store: AlphaStore, profiler: TraderProfiler) -> None:
         _seed_trades(store, "t1", count=50, win_rate=0.6)
         profile = profiler.build_profile("t1", "binance", "TestTrader")
 
@@ -72,16 +70,12 @@ class TestTraderProfiler:
         assert profile.avg_holding_minutes > 0
         assert profile.trade_frequency_daily > 0
 
-    def test_tier_classification(
-        self, store: AlphaStore, profiler: TraderProfiler
-    ) -> None:
+    def test_tier_classification(self, store: AlphaStore, profiler: TraderProfiler) -> None:
         _seed_trades(store, "winner", count=100, win_rate=0.8)
         profile = profiler.build_profile("winner", "binance")
         assert profile.tier in (TraderTier.ELITE, TraderTier.STRONG, TraderTier.NOTABLE)
 
-    def test_profile_persisted(
-        self, store: AlphaStore, profiler: TraderProfiler
-    ) -> None:
+    def test_profile_persisted(self, store: AlphaStore, profiler: TraderProfiler) -> None:
         _seed_trades(store, "t2", count=30, win_rate=0.5)
         profiler.build_profile("t2", "binance")
 
@@ -90,9 +84,7 @@ class TestTraderProfiler:
         assert retrieved is not None
         assert retrieved.total_trades == 30
 
-    def test_consistency_score(
-        self, store: AlphaStore, profiler: TraderProfiler
-    ) -> None:
+    def test_consistency_score(self, store: AlphaStore, profiler: TraderProfiler) -> None:
         _seed_trades(store, "consistent", count=100, win_rate=0.65)
         profile = profiler.build_profile("consistent", "binance")
         # Consistent win rate should yield a decent consistency score

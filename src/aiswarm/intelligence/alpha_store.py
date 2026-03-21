@@ -307,9 +307,7 @@ class AlphaStore:
                 ),
             )
 
-    def get_rank_history(
-        self, trader_id: str, limit: int = 30
-    ) -> list[LeaderboardEntry]:
+    def get_rank_history(self, trader_id: str, limit: int = 30) -> list[LeaderboardEntry]:
         """Get historical rank snapshots for a trader."""
         with self._connect() as conn:
             rows = conn.execute(

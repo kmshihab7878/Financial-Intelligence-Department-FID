@@ -76,9 +76,7 @@ class TestProfileOperations:
     def test_get_top_traders(self, store: AlphaStore) -> None:
         for i in range(5):
             tier = TraderTier.ELITE if i < 2 else TraderTier.AVERAGE
-            store.upsert_profile(
-                TraderProfile(trader_id=f"t{i}", exchange="binance", tier=tier)
-            )
+            store.upsert_profile(TraderProfile(trader_id=f"t{i}", exchange="binance", tier=tier))
 
         elite = store.get_top_traders(tier=TraderTier.ELITE)
         assert len(elite) == 2

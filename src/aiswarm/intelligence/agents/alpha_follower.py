@@ -92,10 +92,7 @@ class AlphaFollowerAgent(Agent):
 
         # Filter by recency
         cutoff_ts = now.timestamp() - self.max_activity_age
-        fresh = [
-            a for a in recent
-            if a.timestamp.timestamp() >= cutoff_ts
-        ]
+        fresh = [a for a in recent if a.timestamp.timestamp() >= cutoff_ts]
         if not fresh:
             return {"signal": None, "reason": "no_fresh_activity"}
 
@@ -176,7 +173,13 @@ class AlphaFollowerAgent(Agent):
 
     def _meets_tier_requirement(self, tier: TraderTier) -> bool:
         """Check if a trader's tier meets the minimum requirement."""
-        tier_order = [TraderTier.WEAK, TraderTier.AVERAGE, TraderTier.NOTABLE, TraderTier.STRONG, TraderTier.ELITE]
+        tier_order = [
+            TraderTier.WEAK,
+            TraderTier.AVERAGE,
+            TraderTier.NOTABLE,
+            TraderTier.STRONG,
+            TraderTier.ELITE,
+        ]
         return tier_order.index(tier) >= tier_order.index(self.min_tier)
 
     def _score_activity(
@@ -208,7 +211,10 @@ class AlphaFollowerAgent(Agent):
         # Final confidence
         confidence = min(
             0.90,
-            max(0.20, (base_confidence + consistency_bonus + win_rate_adj + sharpe_adj) * recency_factor),
+            max(
+                0.20,
+                (base_confidence + consistency_bonus + win_rate_adj + sharpe_adj) * recency_factor,
+            ),
         )
 
         # Direction: map side to direction

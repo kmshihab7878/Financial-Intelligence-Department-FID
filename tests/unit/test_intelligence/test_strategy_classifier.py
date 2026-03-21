@@ -66,49 +66,37 @@ def _seed_swing(store: AlphaStore, trader_id: str = "swing") -> None:
 
 
 class TestStrategyClassifier:
-    def test_insufficient_data(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_insufficient_data(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         fp = classifier.classify("empty_trader")
         assert fp.style == TradingStyle.UNKNOWN
         assert fp.confidence == 0.0
 
-    def test_classify_scalper(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_classify_scalper(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         _seed_scalper(store)
         fp = classifier.classify("scalper")
         assert fp.style == TradingStyle.SCALPER
         assert fp.sample_size >= 10
         assert fp.confidence > 0
 
-    def test_classify_swing(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_classify_swing(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         _seed_swing(store)
         fp = classifier.classify("swing")
         assert fp.style == TradingStyle.SWING
         assert fp.sample_size >= 10
 
-    def test_fingerprint_persisted(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_fingerprint_persisted(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         _seed_scalper(store, "persisted")
         classifier.classify("persisted")
         fp = store.get_latest_fingerprint("persisted")
         assert fp is not None
         assert fp.trader_id == "persisted"
 
-    def test_entry_timing_detected(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_entry_timing_detected(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         _seed_swing(store, "timing_test")
         fp = classifier.classify("timing_test")
         assert fp.entry_timing in ("dip_buyer", "rally_shorter", "mixed")
 
-    def test_typical_hour_detected(
-        self, store: AlphaStore, classifier: StrategyClassifier
-    ) -> None:
+    def test_typical_hour_detected(self, store: AlphaStore, classifier: StrategyClassifier) -> None:
         _seed_scalper(store, "hour_test")
         fp = classifier.classify("hour_test")
         assert fp.typical_entry_hour_utc is not None
