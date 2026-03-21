@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in AIS, please report it responsibly:
 
-1. **Preferred**: Use [GitHub Security Advisories](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/security/advisories/new) to report the issue privately.
+1. **Preferred**: Use [GitHub Security Advisories](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/security/advisories/new) to report the issue privately.
 2. **Fallback**: Email khaledshihab73@gmail.com with the subject line `[AIS Security]`.
 
 Please include:

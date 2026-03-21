@@ -6,8 +6,8 @@ Thank you for considering contributing to AIS.
 
 ```bash
 # Clone the repository
-git clone https://github.com/kmshihab7878/Financial-Intelligence-Department-FID.git
-cd Financial-Intelligence-Department-FID
+git clone https://github.com/kmshihab7878/Autonomous-Investment-Swarm.git
+cd Autonomous-Investment-Swarm
 
 # Create virtual environment
 python -m venv .venv
@@ -65,4 +65,4 @@ All production code lives under `src/aiswarm/`. See the [Architecture Overview](
 
 ## Security
 
-If you find a security vulnerability, do **not** open a public issue. See [SECURITY.md](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/blob/main/SECURITY.md).
+If you find a security vulnerability, do **not** open a public issue. See [SECURITY.md](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/blob/main/SECURITY.md).

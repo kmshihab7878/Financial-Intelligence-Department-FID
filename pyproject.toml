@@ -101,10 +101,10 @@ module = "aiswarm.quant.*"
 disallow_any_generics = false
 
 [project.urls]
-Homepage = "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID"
-Repository = "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID"
-Issues = "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/issues"
-Documentation = "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/tree/main/docs"
+Homepage = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm"
+Repository = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm"
+Issues = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm/issues"
+Documentation = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm/tree/main/docs"
 
 [project.scripts]
 ais = "aiswarm.__main__:main"

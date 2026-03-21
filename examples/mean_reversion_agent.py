@@ -10,7 +10,7 @@ Strategy:
 
 To use this in AIS, register it with the Coordinator at startup.
 See the Strategy Development Guide for details:
-https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/strategy-development/
+https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/strategy-development/
 """
 
 from __future__ import annotations

@@ -6,8 +6,8 @@ Thank you for considering contributing to the Autonomous Investment Swarm. This 
 
 ```bash
 # Clone and install
-git clone https://github.com/kmshihab7878/Financial-Intelligence-Department-FID.git
-cd Financial-Intelligence-Department-FID
+git clone https://github.com/kmshihab7878/Autonomous-Investment-Swarm.git
+cd Autonomous-Investment-Swarm
 
 # Create virtual environment
 python -m venv .venv
@@ -93,7 +93,7 @@ test(exchange): add Binance provider unit tests
 
 ## Project Structure
 
-All production code lives under `src/aiswarm/`. See the [Architecture docs](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/overview/) for details.
+All production code lives under `src/aiswarm/`. See the [Architecture docs](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/overview/) for details.
 
 ## Building Documentation
 
@@ -105,14 +105,14 @@ mkdocs build   # Build static site
 
 ## Reporting Issues
 
-- **Bugs**: Use the [bug report template](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/issues/new?template=bug_report.yml)
-- **Features**: Use the [feature request template](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/issues/new?template=feature_request.yml)
+- **Bugs**: Use the [bug report template](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/issues/new?template=bug_report.yml)
+- **Features**: Use the [feature request template](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/issues/new?template=feature_request.yml)
 - **Security**: See [SECURITY.md](SECURITY.md) — do **not** open a public issue
 
 ## Getting Help
 
 If you have questions about contributing:
 
-1. Check the [documentation](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/)
-2. Search existing [issues](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/issues)
-3. Open a [discussion](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/discussions)
+1. Check the [documentation](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/)
+2. Search existing [issues](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/issues)
+3. Open a [discussion](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/discussions)

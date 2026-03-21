@@ -17,4 +17,4 @@ python -m aiswarm --mode paper
 
 ## Writing Custom Strategies
 
-See the [Strategy Development Guide](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/strategy-development/) for a complete tutorial.
+See the [Strategy Development Guide](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/strategy-development/) for a complete tutorial.
