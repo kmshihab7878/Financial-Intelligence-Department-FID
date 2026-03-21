@@ -13,7 +13,18 @@ from aiswarm.api.routes_metrics import router as metrics_router
 from aiswarm.api.routes_reports import router as reports_router
 from aiswarm.api.routes_session import router as session_router
 
-app = FastAPI(title="Autonomous Investment Swarm", version=__version__)
+app = FastAPI(
+    title="Autonomous Investment Swarm",
+    version=__version__,
+    description=(
+        "Risk-gated autonomous trading API. "
+        "Every order requires an HMAC-signed approval token from the risk engine."
+    ),
+    license_info={"name": "Apache 2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0"},
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+)
 
 # Static files (dashboard)
 _static_dir = Path(__file__).parent / "static"
