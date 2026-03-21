@@ -1,8 +1,8 @@
 site_name: "AIS — Autonomous Investment Swarm"
 site_description: "Risk-gated autonomous trading system with multi-agent orchestration"
-site_url: "https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/"
-repo_url: "https://github.com/kmshihab7878/Financial-Intelligence-Department-FID"
-repo_name: "kmshihab7878/Financial-Intelligence-Department-FID"
+site_url: "https://kmshihab7878.github.io/Autonomous-Investment-Swarm/"
+repo_url: "https://github.com/kmshihab7878/Autonomous-Investment-Swarm"
+repo_name: "kmshihab7878/Autonomous-Investment-Swarm"
 edit_uri: "edit/main/docs/"
 
 theme:
@@ -86,7 +86,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/kmshihab7878/Financial-Intelligence-Department-FID
+      link: https://github.com/kmshihab7878/Autonomous-Investment-Swarm
   generator: false
 
 extra_css:

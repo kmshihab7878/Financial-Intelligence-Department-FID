@@ -5,8 +5,8 @@ Get AIS running in paper trading mode in under 5 minutes.
 ## 1. Install
 
 ```bash
-git clone https://github.com/kmshihab7878/Financial-Intelligence-Department-FID.git
-cd Financial-Intelligence-Department-FID
+git clone https://github.com/kmshihab7878/Autonomous-Investment-Swarm.git
+cd Autonomous-Investment-Swarm
 pip install -e ".[dev]"
 ```
 

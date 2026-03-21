@@ -50,4 +50,4 @@ These are longer-term explorations without committed timelines:
 
 ---
 
-Have ideas? Open a [feature request](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/issues/new?template=feature_request.yml) or start a [discussion](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/discussions).
+Have ideas? Open a [feature request](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/issues/new?template=feature_request.yml) or start a [discussion](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/discussions).

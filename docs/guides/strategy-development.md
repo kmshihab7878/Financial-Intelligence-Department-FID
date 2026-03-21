@@ -206,4 +206,4 @@ graph TD
 - [Agent System Architecture](../architecture/agents.md)
 - [Data Model](../architecture/data-model.md) — Signal and Order schemas
 - [Risk Engine](../architecture/risk-engine.md) — How orders are validated
-- [Example Agent](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/blob/main/examples/mean_reversion_agent.py)
+- [Example Agent](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/blob/main/examples/mean_reversion_agent.py)

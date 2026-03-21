@@ -10,23 +10,23 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/actions/workflows/ci.yml"><img src="https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/"><img src="https://img.shields.io/badge/docs-mkdocs%20material-blue" alt="Docs"></a>
-  <a href="https://codecov.io/gh/kmshihab7878/Financial-Intelligence-Department-FID"><img src="https://img.shields.io/badge/coverage-89%25-brightgreen" alt="Coverage: 89%"></a>
+  <a href="https://github.com/kmshihab7878/Autonomous-Investment-Swarm/actions/workflows/ci.yml"><img src="https://github.com/kmshihab7878/Autonomous-Investment-Swarm/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://kmshihab7878.github.io/Autonomous-Investment-Swarm/"><img src="https://img.shields.io/badge/docs-mkdocs%20material-blue" alt="Docs"></a>
+  <a href="https://codecov.io/gh/kmshihab7878/Autonomous-Investment-Swarm"><img src="https://img.shields.io/badge/coverage-89%25-brightgreen" alt="Coverage: 89%"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue" alt="Python 3.10 | 3.11 | 3.12"></a>
   <a href="https://docs.astral.sh/ruff/"><img src="https://img.shields.io/badge/code%20style-ruff-000000" alt="Ruff"></a>
   <a href="http://mypy-lang.org/"><img src="https://img.shields.io/badge/typing-mypy%20strict-blue" alt="mypy strict"></a>
-  <a href="https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/discussions"><img src="https://img.shields.io/badge/community-discussions-purple" alt="Discussions"></a>
+  <a href="https://github.com/kmshihab7878/Autonomous-Investment-Swarm/discussions"><img src="https://img.shields.io/badge/community-discussions-purple" alt="Discussions"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"></a>
 </p>
 
 <p align="center">
-  <a href="https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/">Documentation</a> &middot;
-  <a href="https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/getting-started/quickstart/">Quick Start</a> &middot;
-  <a href="https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/overview/">Architecture</a> &middot;
-  <a href="https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/api/">API Reference</a> &middot;
+  <a href="https://kmshihab7878.github.io/Autonomous-Investment-Swarm/">Documentation</a> &middot;
+  <a href="https://kmshihab7878.github.io/Autonomous-Investment-Swarm/getting-started/quickstart/">Quick Start</a> &middot;
+  <a href="https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/overview/">Architecture</a> &middot;
+  <a href="https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/api/">API Reference</a> &middot;
   <a href="ROADMAP.md">Roadmap</a> &middot;
-  <a href="https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/discussions">Discussions</a>
+  <a href="https://github.com/kmshihab7878/Autonomous-Investment-Swarm/discussions">Discussions</a>
 </p>
 
 ---
@@ -170,8 +170,8 @@ src/aiswarm/
 
 ```bash
 # Install
-git clone https://github.com/kmshihab7878/Financial-Intelligence-Department-FID.git
-cd Financial-Intelligence-Department-FID
+git clone https://github.com/kmshihab7878/Autonomous-Investment-Swarm.git
+cd Autonomous-Investment-Swarm
 pip install -e ".[dev]"
 
 # Configure (minimum: set HMAC secret)
@@ -197,7 +197,7 @@ docker compose up --build
 | Grafana | [localhost:3000](http://localhost:3000) | Dashboards |
 | Alertmanager | [localhost:9093](http://localhost:9093) | Alert routing |
 
-See the [full quickstart guide](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/getting-started/quickstart/) for detailed walkthrough.
+See the [full quickstart guide](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/getting-started/quickstart/) for detailed walkthrough.
 
 ## Supported Exchanges
 
@@ -209,7 +209,7 @@ See the [full quickstart guide](https://kmshihab7878.github.io/Financial-Intelli
 | Bybit | x | x | x | `BTCUSDT` |
 | Interactive Brokers | x | x | x | `AAPL`, `BTCUSD` |
 
-Exchange routing is config-driven via `config/exchanges.yaml`. See [Multi-Exchange Setup](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/multi-exchange/).
+Exchange routing is config-driven via `config/exchanges.yaml`. See [Multi-Exchange Setup](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/multi-exchange/).
 
 ## How It Differs
 
@@ -263,13 +263,13 @@ make docs-serve                                             # Local docs at http
 
 ## Documentation
 
-Full documentation at **[kmshihab7878.github.io/Financial-Intelligence-Department-FID](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/)**:
+Full documentation at **[kmshihab7878.github.io/Autonomous-Investment-Swarm](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/)**:
 
-- **Getting Started** — [Installation](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/getting-started/installation/), [Quick Start](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/getting-started/quickstart/), [Configuration](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/getting-started/configuration/)
-- **Architecture** — [Overview](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/overview/), [Agent System](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/agents/), [Risk Engine](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/risk-engine/), [Execution](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/execution/), [Exchange Layer](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/exchange-layer/), [Portfolio](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/portfolio/), [Data Model](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/architecture/data-model/)
-- **Guides** — [Strategy Development](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/strategy-development/), [Backtesting](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/backtesting/), [Multi-Exchange](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/multi-exchange/), [Deployment](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/deployment/), [Monitoring](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/monitoring/)
-- **Reference** — [API](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/api/), [Configuration](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/configuration/), [Metrics](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/metrics/), [Decision Log](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/decision-log/), [Quantitative Tools](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/reference/quant-tools/)
-- **Operations** — [Risk Policy](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/operations/risk-policy/), [Operating Model](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/operations/operating-model/), [Sessions](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/operations/sessions/)
+- **Getting Started** — [Installation](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/getting-started/installation/), [Quick Start](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/getting-started/quickstart/), [Configuration](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/getting-started/configuration/)
+- **Architecture** — [Overview](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/overview/), [Agent System](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/agents/), [Risk Engine](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/risk-engine/), [Execution](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/execution/), [Exchange Layer](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/exchange-layer/), [Portfolio](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/portfolio/), [Data Model](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/architecture/data-model/)
+- **Guides** — [Strategy Development](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/strategy-development/), [Backtesting](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/backtesting/), [Multi-Exchange](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/multi-exchange/), [Deployment](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/deployment/), [Monitoring](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/monitoring/)
+- **Reference** — [API](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/api/), [Configuration](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/configuration/), [Metrics](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/metrics/), [Decision Log](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/decision-log/), [Quantitative Tools](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/reference/quant-tools/)
+- **Operations** — [Risk Policy](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/operations/risk-policy/), [Operating Model](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/operations/operating-model/), [Sessions](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/operations/sessions/)
 
 ## Examples
 
@@ -278,13 +278,13 @@ The [`examples/`](examples/) directory includes:
 - `paper_trading.env` — Minimal environment for paper trading
 - `mean_reversion_agent.py` — Example custom strategy agent (Bollinger Band mean reversion)
 
-See the [Strategy Development Guide](https://kmshihab7878.github.io/Financial-Intelligence-Department-FID/guides/strategy-development/) for a complete tutorial on building custom agents.
+See the [Strategy Development Guide](https://kmshihab7878.github.io/Autonomous-Investment-Swarm/guides/strategy-development/) for a complete tutorial on building custom agents.
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, commit conventions, and PR requirements.
 
-Questions? Start a [discussion](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/discussions).
+Questions? Start a [discussion](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/discussions).
 
 ## Security
 

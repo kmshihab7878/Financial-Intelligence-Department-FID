@@ -47,8 +47,8 @@ Prometheus metrics, Grafana dashboards, Alertmanager integration, structured JSO
 
 ```bash
 # Clone and install
-git clone https://github.com/kmshihab7878/Financial-Intelligence-Department-FID.git
-cd Financial-Intelligence-Department-FID
+git clone https://github.com/kmshihab7878/Autonomous-Investment-Swarm.git
+cd Autonomous-Investment-Swarm
 pip install -e ".[dev]"
 
 # Configure
@@ -93,4 +93,4 @@ graph LR
 
 ## License
 
-Apache License 2.0. See [LICENSE](https://github.com/kmshihab7878/Financial-Intelligence-Department-FID/blob/main/LICENSE).
+Apache License 2.0. See [LICENSE](https://github.com/kmshihab7878/Autonomous-Investment-Swarm/blob/main/LICENSE).
