@@ -12,6 +12,7 @@ from aiswarm.api.routes_mandates import router as mandates_router
 from aiswarm.api.routes_metrics import router as metrics_router
 from aiswarm.api.routes_reports import router as reports_router
 from aiswarm.api.routes_session import router as session_router
+from aiswarm.api.routes_ws import router as ws_router
 
 app = FastAPI(
     title="Autonomous Investment Swarm",
@@ -53,3 +54,4 @@ app.include_router(
 app.include_router(
     session_router, tags=["session"], dependencies=[Depends(require_general_rate_limit)]
 )
+app.include_router(ws_router, tags=["websocket"])
