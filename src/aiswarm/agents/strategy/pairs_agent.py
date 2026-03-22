@@ -28,15 +28,15 @@ def _compute_spread_zscore(
     """Compute z-score of the price ratio spread."""
     if len(prices_a) < lookback or len(prices_b) < lookback:
         return None
-    ratios = [a / b for a, b in zip(prices_a[-lookback:], prices_b[-lookback:]) if b != 0]
+    ratios: list[float] = [a / b for a, b in zip(prices_a[-lookback:], prices_b[-lookback:]) if b != 0]
     if len(ratios) < lookback:
         return None
-    mean = sum(ratios) / len(ratios)
-    variance = sum((r - mean) ** 2 for r in ratios) / len(ratios)
-    std = variance**0.5
+    mean: float = sum(ratios) / len(ratios)
+    variance: float = sum((r - mean) ** 2 for r in ratios) / len(ratios)
+    std: float = variance**0.5
     if std == 0:
         return 0.0
-    current_ratio = ratios[-1]
+    current_ratio: float = ratios[-1]
     return (current_ratio - mean) / std
 
 
