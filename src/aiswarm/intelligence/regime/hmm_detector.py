@@ -26,7 +26,7 @@ logger = get_logger(__name__)
 
 # Try optional hmmlearn import
 try:
-    from hmmlearn.hmm import GaussianHMM  # type: ignore[import-untyped]
+    from hmmlearn.hmm import GaussianHMM
 
     _HAS_HMMLEARN = True
 except ImportError:
