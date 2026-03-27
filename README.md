@@ -74,6 +74,9 @@ Scans trades across exchanges, profiles top performers, and generates follow sig
 ### Plugin System
 Extend AIS with custom strategies, data sources, risk guards, and integrations. Discover plugins via Python entry points or directory scanning. Four plugin types with full lifecycle hooks.
 
+### Security Hardened
+WebSocket token authentication, CORS policy with configurable origins, security headers (HSTS, X-Frame-Options, X-Content-Type-Options), OpenAPI disabled in live mode, secret redaction in call history, CI actions pinned to SHA digests, and Redis authentication enforced. All monitoring ports bind to localhost.
+
 ### Full Observability
 Prometheus metrics, Grafana dashboards, Alertmanager alerts, OpenTelemetry tracing, real-time WebSocket dashboard, position reconciliation, and append-only event store for audit trail.
 
@@ -86,8 +89,8 @@ Prometheus metrics, Grafana dashboards, Alertmanager alerts, OpenTelemetry traci
 | Metric | Value |
 |--------|-------|
 | Source files | 155 Python modules |
-| Lines of code | 20,400+ |
-| Test suite | 1,365 tests (unit + integration + property-based + benchmarks) |
+| Lines of code | 20,500+ |
+| Test suite | 1,374 tests (unit + integration + property-based + benchmarks) |
 | Coverage | 89% |
 | Strategy agents | 10 built-in + Darwinian evolution + plugin system |
 | Exchanges | 5 (Aster, Binance, Coinbase, Bybit, IB) |
@@ -304,6 +307,8 @@ Exchange routing is config-driven via `config/exchanges.yaml`. See [Multi-Exchan
 <tr><td><strong>Property-based tests</strong></td><td>Yes (Hypothesis)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
 <tr><td><strong>Session lifecycle</strong></td><td>Yes</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
 <tr><td><strong>Tax/compliance export</strong></td><td>CSV/Koinly/CoinTracker</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td><strong>Security headers + CORS</strong></td><td>Yes</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td><strong>CI supply chain pinning</strong></td><td>SHA-pinned</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
 </table>
 
 AIS combines cryptographic risk gating, AI-powered intelligence, mandate governance, and enterprise operations in a way no single competitor matches.
