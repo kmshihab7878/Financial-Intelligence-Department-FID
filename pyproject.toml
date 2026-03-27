@@ -102,6 +102,14 @@ strict = true
 module = "aiswarm.quant.*"
 disallow_any_generics = false
 
+[[tool.mypy.overrides]]
+module = "aiswarm.evolution.*"
+disallow_any_generics = false
+
+[[tool.mypy.overrides]]
+module = "aiswarm.simulation.*"
+disallow_any_generics = false
+
 [project.urls]
 Homepage = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm"
 Repository = "https://github.com/kmshihab7878/Autonomous-Investment-Swarm"
