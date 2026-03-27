@@ -196,9 +196,8 @@ class SimulationEngine:
                 outcome=PredictionOutcome.NEUTRAL,
             )
 
-        direction_correct = (
-            (prediction.direction > 0 and actual_return > 0)
-            or (prediction.direction < 0 and actual_return < 0)
+        direction_correct = (prediction.direction > 0 and actual_return > 0) or (
+            prediction.direction < 0 and actual_return < 0
         )
 
         if direction_correct:
@@ -268,8 +267,7 @@ class SimulationEngine:
 
         # Identify best/worst agents
         avg_by_agent = {
-            aid: float(np.mean(scores)) if scores else 0.0
-            for aid, scores in agent_scores.items()
+            aid: float(np.mean(scores)) if scores else 0.0 for aid, scores in agent_scores.items()
         }
         best_agent = max(avg_by_agent, key=lambda k: avg_by_agent[k]) if avg_by_agent else ""
         worst_agent = min(avg_by_agent, key=lambda k: avg_by_agent[k]) if avg_by_agent else ""

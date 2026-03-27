@@ -43,7 +43,6 @@ class JanusRegime(str, Enum):
     MIXED = "mixed"  # Cohorts are balanced → no clear regime
 
 
-
 @dataclass(frozen=True)
 class CohortMetrics:
     """Performance metrics for a single cohort."""
@@ -149,9 +148,7 @@ class JanusMetaWeighting:
         recent = outcomes[-self._rolling_window :]
         if len(recent) < 2:
             return 0.0
-        returns = np.array(
-            [o.actual_return * o.confidence for o in recent], dtype=np.float64
-        )
+        returns = np.array([o.actual_return * o.confidence for o in recent], dtype=np.float64)
         mean_ret = float(np.mean(returns))
         std_ret = float(np.std(returns, ddof=1))
         if std_ret < 1e-10:
@@ -317,7 +314,7 @@ class JanusMetaWeighting:
             # Check for disagreement
             is_contested = len(directions) > 1 and 0 not in directions
             if is_contested:
-                avg_confidence *= (1 - self._disagreement_penalty)
+                avg_confidence *= 1 - self._disagreement_penalty
 
             # Final direction: sign of weighted average
             final_direction = 1 if avg_direction > 0 else (-1 if avg_direction < 0 else 0)
@@ -345,7 +342,5 @@ class JanusMetaWeighting:
             "cohort_ids": self._cohort_ids,
             "weights": dict(self._weights),
             "history_length": len(self._history),
-            "outcome_counts": {
-                cid: len(outcomes) for cid, outcomes in self._outcomes.items()
-            },
+            "outcome_counts": {cid: len(outcomes) for cid, outcomes in self._outcomes.items()},
         }

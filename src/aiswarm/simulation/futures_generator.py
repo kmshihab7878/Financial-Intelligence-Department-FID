@@ -128,7 +128,9 @@ DEFAULT_EVENTS: dict[ScenarioBranch, list[ScheduledEvent]] = {
     ],
     ScenarioBranch.LIQUIDATION_CASCADE: [
         ScheduledEvent(2, "Flash Crash", ["BTC", "ETH", "SOL"], -0.08, 3.0),
-        ScheduledEvent(3, "Cascading Liquidations", ["BTC", "ETH", "SOL", "AVAX", "DOGE"], -0.06, 2.5),
+        ScheduledEvent(
+            3, "Cascading Liquidations", ["BTC", "ETH", "SOL", "AVAX", "DOGE"], -0.06, 2.5
+        ),
         ScheduledEvent(8, "Dead Cat Bounce", ["BTC", "ETH"], 0.04, 2.0),
     ],
     ScenarioBranch.REGULATORY_SHOCK: [
@@ -155,7 +157,9 @@ class CryptoFuturesGenerator:
         seed: int | None = None,
     ) -> None:
         self._assets = assets or DEFAULT_ASSETS
-        self._correlation = correlation_matrix if correlation_matrix is not None else DEFAULT_CORRELATION
+        self._correlation = (
+            correlation_matrix if correlation_matrix is not None else DEFAULT_CORRELATION
+        )
         self._events = events or DEFAULT_EVENTS
         self._scenario_weights = scenario_weights or SCENARIO_WEIGHTS
         self._rng = np.random.default_rng(seed)
@@ -164,8 +168,7 @@ class CryptoFuturesGenerator:
         n = len(self._assets)
         if self._correlation.shape != (n, n):
             raise ValueError(
-                f"Correlation matrix shape {self._correlation.shape} "
-                f"does not match {n} assets"
+                f"Correlation matrix shape {self._correlation.shape} " f"does not match {n} assets"
             )
 
         # Compute Cholesky decomposition (lower triangular)
@@ -253,9 +256,7 @@ class CryptoFuturesGenerator:
 
                 # GBM-like return: drift + vol * correlated_normal + event
                 daily_return = (
-                    adjusted_drift
-                    + daily_vol * vol_mult * float(correlated[day, i])
-                    + event_impact
+                    adjusted_drift + daily_vol * vol_mult * float(correlated[day, i]) + event_impact
                 )
                 returns.append(daily_return)
                 new_price = prices[-1] * (1 + daily_return)

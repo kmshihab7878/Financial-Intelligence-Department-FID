@@ -149,9 +149,7 @@ class ReflexivityDetector:
                     "extra_json": {
                         "count": len(signals),
                         "types": [s.loop_type.value for s in signals],
-                        "max_severity": max(
-                            s.severity.value for s in signals
-                        ),
+                        "max_severity": max(s.severity.value for s in signals),
                     }
                 },
             )
@@ -232,9 +230,7 @@ class ReflexivityDetector:
 
         # Check if drawdown is accelerating (getting worse)
         recent_dd = drawdown[-5:]
-        is_accelerating = all(
-            recent_dd[i] >= recent_dd[i - 1] for i in range(1, len(recent_dd))
-        )
+        is_accelerating = all(recent_dd[i] >= recent_dd[i - 1] for i in range(1, len(recent_dd)))
 
         confidence = min(1.0, current_dd / (self._forced_selling_drawdown * 2))
         if is_accelerating:

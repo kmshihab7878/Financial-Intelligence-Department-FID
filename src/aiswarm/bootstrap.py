@@ -395,6 +395,7 @@ def bootstrap_from_config(
     )
     # Register agents with known tuning parameters
     from aiswarm.agents.registry import _AGENT_REGISTRY
+
     for agent in agents:
         for strategy, (cls, _) in _AGENT_REGISTRY.items():
             if isinstance(agent, cls):

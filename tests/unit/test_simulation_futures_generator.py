@@ -47,9 +47,7 @@ class TestCryptoFuturesGenerator:
 
     def test_generate_scenario_base(self) -> None:
         gen = CryptoFuturesGenerator(seed=42)
-        result = gen.generate_scenario(
-            ScenarioBranch.BASE, STARTING_PRICES, horizon_days=10
-        )
+        result = gen.generate_scenario(ScenarioBranch.BASE, STARTING_PRICES, horizon_days=10)
 
         assert result.scenario == ScenarioBranch.BASE
         assert result.horizon_days == 10
@@ -107,9 +105,7 @@ class TestCryptoFuturesGenerator:
         n = 20
         for i in range(n):
             gen_i = CryptoFuturesGenerator(seed=i)
-            result = gen_i.generate_scenario(
-                ScenarioBranch.BEAR, STARTING_PRICES, horizon_days=30
-            )
+            result = gen_i.generate_scenario(ScenarioBranch.BEAR, STARTING_PRICES, horizon_days=30)
             btc = result.paths["BTC"]
             total_return += (btc.prices[-1] - btc.prices[0]) / btc.prices[0]
 
@@ -147,9 +143,7 @@ class TestCryptoFuturesGenerator:
 
     def test_missing_symbol_uses_default_price(self) -> None:
         gen = CryptoFuturesGenerator(seed=42)
-        result = gen.generate_scenario(
-            ScenarioBranch.BASE, {"BTC": 65000.0}, horizon_days=5
-        )
+        result = gen.generate_scenario(ScenarioBranch.BASE, {"BTC": 65000.0}, horizon_days=5)
 
         # ETH not in starting_prices → defaults to 100.0
         assert result.paths["ETH"].prices[0] == 100.0

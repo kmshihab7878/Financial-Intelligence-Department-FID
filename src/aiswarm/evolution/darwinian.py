@@ -183,9 +183,7 @@ class DarwinianWeightManager:
             else:
                 quartile = 2 if rank < n // 2 else 3
 
-            outcomes = [
-                o for o in self._outcomes.get(agent_id, []) if o.timestamp >= cutoff
-            ]
+            outcomes = [o for o in self._outcomes.get(agent_id, []) if o.timestamp >= cutoff]
             results.append(
                 AgentPerformance(
                     agent_id=agent_id,

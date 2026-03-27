@@ -17,7 +17,9 @@ def _now() -> datetime:
     return datetime.now(tz=timezone.utc)
 
 
-def _obs(price: float, volume: float = 1000.0, oi: float = 0.0, fr: float = 0.0) -> PriceObservation:
+def _obs(
+    price: float, volume: float = 1000.0, oi: float = 0.0, fr: float = 0.0
+) -> PriceObservation:
     return PriceObservation(
         timestamp=_now(),
         price=price,
@@ -83,9 +85,7 @@ class TestLiquidationCascade:
         detector = ReflexivityDetector(liquidation_threshold=0.05)
         # Large move with rising OI
         for i in range(10):
-            detector.add_observation(
-                _obs(100.0 - i * 0.8, oi=1000.0 + i * 200)
-            )
+            detector.add_observation(_obs(100.0 - i * 0.8, oi=1000.0 + i * 200))
 
         signals = detector.detect_all()
         cascade_signals = [
@@ -97,9 +97,7 @@ class TestLiquidationCascade:
     def test_extreme_funding_amplifies(self) -> None:
         detector = ReflexivityDetector(liquidation_threshold=0.05)
         for i in range(10):
-            detector.add_observation(
-                _obs(100.0 - i * 0.8, fr=0.002)
-            )
+            detector.add_observation(_obs(100.0 - i * 0.8, fr=0.002))
 
         signals = detector.detect_all()
         cascade_signals = [
@@ -118,9 +116,7 @@ class TestForcedSelling:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        forced = [
-            s for s in signals if s.loop_type == FeedbackLoopType.FORCED_SELLING
-        ]
+        forced = [s for s in signals if s.loop_type == FeedbackLoopType.FORCED_SELLING]
         assert len(forced) >= 1
 
     def test_no_forced_selling_on_recovery(self) -> None:
@@ -131,9 +127,7 @@ class TestForcedSelling:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        forced = [
-            s for s in signals if s.loop_type == FeedbackLoopType.FORCED_SELLING
-        ]
+        forced = [s for s in signals if s.loop_type == FeedbackLoopType.FORCED_SELLING]
         assert len(forced) == 0
 
 
@@ -146,9 +140,7 @@ class TestNarrativeFlows:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        narrative = [
-            s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS
-        ]
+        narrative = [s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS]
         assert len(narrative) >= 1
         if narrative:
             assert narrative[0].metadata["direction"] == 1.0
@@ -160,9 +152,7 @@ class TestNarrativeFlows:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        narrative = [
-            s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS
-        ]
+        narrative = [s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS]
         assert len(narrative) >= 1
         if narrative:
             assert narrative[0].metadata["direction"] == -1.0
@@ -174,9 +164,7 @@ class TestNarrativeFlows:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        narrative = [
-            s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS
-        ]
+        narrative = [s for s in signals if s.loop_type == FeedbackLoopType.NARRATIVE_FLOWS]
         assert len(narrative) == 0
 
 
@@ -189,9 +177,7 @@ class TestPolicyResponse:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        policy = [
-            s for s in signals if s.loop_type == FeedbackLoopType.POLICY_RESPONSE
-        ]
+        policy = [s for s in signals if s.loop_type == FeedbackLoopType.POLICY_RESPONSE]
         assert len(policy) >= 1
 
     def test_no_policy_on_calm_market(self) -> None:
@@ -201,9 +187,7 @@ class TestPolicyResponse:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        policy = [
-            s for s in signals if s.loop_type == FeedbackLoopType.POLICY_RESPONSE
-        ]
+        policy = [s for s in signals if s.loop_type == FeedbackLoopType.POLICY_RESPONSE]
         assert len(policy) == 0
 
 
@@ -216,9 +200,7 @@ class TestReversalExtreme:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        reversal = [
-            s for s in signals if s.loop_type == FeedbackLoopType.REVERSAL_EXTREME
-        ]
+        reversal = [s for s in signals if s.loop_type == FeedbackLoopType.REVERSAL_EXTREME]
         assert len(reversal) >= 1
 
     def test_no_reversal_on_short_streak(self) -> None:
@@ -229,9 +211,7 @@ class TestReversalExtreme:
             detector.add_observation(_obs(float(p)))
 
         signals = detector.detect_all()
-        reversal = [
-            s for s in signals if s.loop_type == FeedbackLoopType.REVERSAL_EXTREME
-        ]
+        reversal = [s for s in signals if s.loop_type == FeedbackLoopType.REVERSAL_EXTREME]
         assert len(reversal) == 0
 
 

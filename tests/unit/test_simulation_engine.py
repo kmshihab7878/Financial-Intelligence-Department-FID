@@ -241,9 +241,7 @@ class TestSimulationEngine:
         engine = SimulationEngine(CryptoFuturesGenerator(seed=42))
         agents = [AgentAdapter("a", "test", _bullish_agent)]
 
-        summary = engine.run_simulation(
-            agents, STARTING_PRICES, ["BTC"], horizon_days=5
-        )
+        summary = engine.run_simulation(agents, STARTING_PRICES, ["BTC"], horizon_days=5)
 
         assert "base" in summary.scenario_returns
         assert "BTC" in summary.scenario_returns["base"]

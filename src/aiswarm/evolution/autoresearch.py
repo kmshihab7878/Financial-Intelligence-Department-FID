@@ -226,8 +226,7 @@ class AutoresearchLoop:
                     "extra_json": {
                         "agent_id": worst_id,
                         "cooldown_remaining": (
-                            self._cooldown_cycles
-                            - (self._cycle_count - config.last_modified_cycle)
+                            self._cooldown_cycles - (self._cycle_count - config.last_modified_cycle)
                         ),
                     }
                 },
@@ -312,9 +311,7 @@ class AutoresearchLoop:
 
         # Determine if improvement meets threshold
         if mod.baseline_sharpe != 0:
-            relative_improvement = (current_sharpe - mod.baseline_sharpe) / abs(
-                mod.baseline_sharpe
-            )
+            relative_improvement = (current_sharpe - mod.baseline_sharpe) / abs(mod.baseline_sharpe)
         else:
             relative_improvement = current_sharpe  # Any positive Sharpe is improvement from 0
 
@@ -388,9 +385,7 @@ class AutoresearchLoop:
             ],
             "tuning": {
                 agent_id: {
-                    "parameters": {
-                        p.name: p.current_value for p in config.parameters
-                    },
+                    "parameters": {p.name: p.current_value for p in config.parameters},
                     "last_modified_cycle": config.last_modified_cycle,
                 }
                 for agent_id, config in self._tuning.items()
