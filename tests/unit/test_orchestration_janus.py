@@ -7,8 +7,6 @@ from datetime import datetime, timezone
 import pytest
 
 from aiswarm.orchestration.janus import (
-    BlendedSignal,
-    CohortMetrics,
     JanusMetaWeighting,
     JanusRegime,
     ScoredOutcome,

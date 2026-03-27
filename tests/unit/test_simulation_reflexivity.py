@@ -4,14 +4,12 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
 
 from aiswarm.simulation.reflexivity import (
     FeedbackLoopType,
     PriceObservation,
     ReflexivityDetector,
     ReflexivitySeverity,
-    ReflexivitySignal,
 )
 
 

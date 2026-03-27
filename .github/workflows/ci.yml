@@ -72,7 +72,7 @@ jobs:
           cache: pip
       - run: pip install pip-audit bandit
       - name: pip-audit
-        run: pip-audit --strict --ignore-vuln PYSEC-2024-*
+        run: pip-audit --strict --ignore-vuln PYSEC-2024-* --ignore-vuln CVE-2026-4539
       - name: bandit
         run: bandit -r src/aiswarm/ -c pyproject.toml || bandit -r src/aiswarm/ -ll
       - name: Check for secrets

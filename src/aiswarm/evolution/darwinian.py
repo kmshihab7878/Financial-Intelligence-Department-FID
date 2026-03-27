@@ -16,6 +16,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Any
 
 import numpy as np
 
@@ -294,27 +295,27 @@ class DarwinianWeightManager:
     @classmethod
     def from_dict(
         cls,
-        data: dict[str, object],
+        data: dict[str, Any],
         agent_ids: list[str] | None = None,
     ) -> DarwinianWeightManager:
         """Restore from checkpoint data."""
-        weights = dict(data.get("weights", {}))  # type: ignore[arg-type]
+        weights: dict[str, float] = dict(data.get("weights", {}))
         ids = agent_ids or list(weights.keys())
-        mgr = cls(agent_ids=ids, initial_weights=weights)  # type: ignore[arg-type]
-        mgr._update_count = int(data.get("update_count", 0))  # type: ignore[arg-type]
+        mgr = cls(agent_ids=ids, initial_weights=weights)
+        mgr._update_count = int(data.get("update_count", 0))
 
-        raw_outcomes = data.get("outcomes", {})
-        for agent_id, outcome_list in raw_outcomes.items():  # type: ignore[union-attr]
-            for o in outcome_list:  # type: ignore[union-attr]
+        raw_outcomes: dict[str, list[dict[str, Any]]] = data.get("outcomes", {})
+        for agent_id, outcome_list in raw_outcomes.items():
+            for o in outcome_list:
                 mgr._outcomes[agent_id].append(
                     TradeOutcome(
-                        agent_id=o["agent_id"],  # type: ignore[index]
-                        signal_id=o["signal_id"],  # type: ignore[index]
-                        direction=o["direction"],  # type: ignore[index]
-                        confidence=o["confidence"],  # type: ignore[index]
-                        expected_return=o["expected_return"],  # type: ignore[index]
-                        actual_return=o["actual_return"],  # type: ignore[index]
-                        timestamp=datetime.fromisoformat(o["timestamp"]),  # type: ignore[index]
+                        agent_id=o["agent_id"],
+                        signal_id=o["signal_id"],
+                        direction=o["direction"],
+                        confidence=o["confidence"],
+                        expected_return=o["expected_return"],
+                        actual_return=o["actual_return"],
+                        timestamp=datetime.fromisoformat(o["timestamp"]),
                     )
                 )
         return mgr

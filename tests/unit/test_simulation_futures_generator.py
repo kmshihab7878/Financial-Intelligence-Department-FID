@@ -6,12 +6,10 @@ import numpy as np
 import pytest
 
 from aiswarm.simulation.futures_generator import (
-    DEFAULT_ASSETS,
     DEFAULT_CORRELATION,
     AssetParams,
     CryptoFuturesGenerator,
     ScenarioBranch,
-    ScenarioResult,
 )
 
 
@@ -104,7 +102,6 @@ class TestCryptoFuturesGenerator:
         assert tail <= 0.0
 
     def test_bear_scenario_has_negative_drift(self) -> None:
-        gen = CryptoFuturesGenerator(seed=42)
         # Run multiple bear scenarios to get statistical tendency
         total_return = 0.0
         n = 20

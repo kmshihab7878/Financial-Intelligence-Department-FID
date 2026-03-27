@@ -4,13 +4,10 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-import pytest
 
 from aiswarm.evolution.autoresearch import (
-    AgentTuningConfig,
     AutoresearchLoop,
     ModificationStatus,
-    ParameterBounds,
 )
 from aiswarm.evolution.darwinian import DarwinianWeightManager, TradeOutcome
 from aiswarm.utils.time import utc_now

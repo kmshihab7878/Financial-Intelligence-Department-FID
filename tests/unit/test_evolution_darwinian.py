@@ -4,12 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-import numpy as np
 import pytest
 
 from aiswarm.evolution.darwinian import (
     DEFAULT_WEIGHT,
-    AgentPerformance,
     DarwinianWeightManager,
     TradeOutcome,
 )

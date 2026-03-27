@@ -12,7 +12,6 @@ from aiswarm.simulation.engine import (
     SimulationSummary,
 )
 from aiswarm.simulation.futures_generator import CryptoFuturesGenerator, ScenarioBranch
-from aiswarm.simulation.reflexivity import ReflexivityDetector
 from aiswarm.types.market import MarketRegime, Signal
 from aiswarm.utils.ids import new_id
 from aiswarm.utils.time import utc_now
